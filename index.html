@@ -13,6 +13,7 @@
   --neon-pink: #ff2d78;
   --neon-cyan: #00f5ff;
   --neon-gold: #ffd700;
+  --neon-green: #39ff14;
   --bg-deep: #060010;
   --bg-mid: #0c001e;
   --bg-card: rgba(255,255,255,0.03);
@@ -1148,6 +1149,88 @@ footer {
   100% { transform: translateX(-50%); }
 }
 
+/* ===== KIDS FLOATING BUTTON ===== */
+.kids-float {
+  position: fixed;
+  right: -168px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(57,255,20,0.13), rgba(57,255,20,0.06));
+  border: 1px solid rgba(57,255,20,0.45);
+  border-right: none;
+  border-radius: 14px 0 0 14px;
+  padding: 18px 20px;
+  text-decoration: none;
+  transition: right 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+  animation: kidsFloatGlow 2.5s ease-in-out infinite alternate;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.kids-float:hover {
+  right: 0;
+  box-shadow: -6px 0 40px rgba(57,255,20,0.35), -2px 0 80px rgba(57,255,20,0.12);
+  animation: none;
+}
+
+@keyframes kidsFloatGlow {
+  from { box-shadow: -4px 0 14px rgba(57,255,20,0.2); }
+  to   { box-shadow: -4px 0 30px rgba(57,255,20,0.6), -2px 0 60px rgba(57,255,20,0.15); }
+}
+
+.kids-float-icon {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.kids-float-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kids-float-label {
+  font-family: var(--font-display);
+  font-size: 19px;
+  letter-spacing: 2px;
+  color: var(--neon-green);
+  text-shadow: 0 0 14px rgba(57,255,20,0.55);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kids-float-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kids-float-arrow {
+  font-size: 16px;
+  color: var(--neon-green);
+  opacity: 0.6;
+  transition: transform 0.2s, opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.kids-float:hover .kids-float-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .kids-float { display: none; }
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1100px) {
   .games-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1164,7 +1247,6 @@ footer {
   nav { gap: 0; }
   .nav-links { display: none; }
   .nav-cta { font-size: 10px; padding: 8px 16px; }
-  .form-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
@@ -1172,8 +1254,6 @@ footer {
 }
 
 /* ===== SCROLL ANIMATIONS ===== */
-
-/* Hidden state — before element enters viewport */
 .reveal,
 .reveal-left,
 .reveal-right,
@@ -1187,7 +1267,6 @@ footer {
 .reveal-right { transform: translateX(65px); }
 .reveal-scale { transform: scale(0.87); }
 
-/* Visible state — added by IntersectionObserver when element enters viewport */
 .reveal.visible,
 .reveal-left.visible,
 .reveal-right.visible,
@@ -1196,7 +1275,6 @@ footer {
   transform: none;
 }
 
-/* Staggered children */
 .reveal-stagger > * {
   opacity: 0;
   transform: translateY(40px);
@@ -1230,7 +1308,6 @@ footer {
       <li><a href="#about">About</a></li>
       <li><a href="#games">Games</a></li>
       <li><a href="#parents">Parents</a></li>
-      <li><a href="Kids.html">Kids Zone</a></li>
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -1498,7 +1575,6 @@ footer {
 
   <div class="strip-outer reveal-scale">
     <div class="strip-track">
-      <!-- SET 1 — replace strip-ph divs with <img src="images/photo.jpg" loading="lazy"> -->
       <div class="strip-item"><div class="strip-ph">🎮</div></div>
       <div class="strip-item"><div class="strip-ph">🕶️</div></div>
       <div class="strip-item"><div class="strip-ph">🎉</div></div>
@@ -1511,7 +1587,6 @@ footer {
       <div class="strip-item"><div class="strip-ph">🕶️</div></div>
       <div class="strip-item"><div class="strip-ph">🎉</div></div>
       <div class="strip-item"><div class="strip-ph">🏆</div></div>
-      <!-- SET 2 — exact copy of SET 1 for seamless loop -->
       <div class="strip-item"><div class="strip-ph">🎮</div></div>
       <div class="strip-item"><div class="strip-ph">🕶️</div></div>
       <div class="strip-item"><div class="strip-ph">🎉</div></div>
@@ -1649,14 +1724,23 @@ footer {
   </div>
 </footer>
 
-<!-- SCROLL REVEAL: triggers CSS .visible class when elements enter viewport -->
+<!-- KIDS ZONE FLOATING BUTTON -->
+<a href="Kids.html" class="kids-float">
+  <div class="kids-float-icon">🧒</div>
+  <div class="kids-float-text">
+    <span class="kids-float-label">Kids Zone</span>
+    <span class="kids-float-sub">Ages 6+ · Safe &amp; Fun</span>
+  </div>
+  <div class="kids-float-arrow">→</div>
+</a>
+
+<!-- SCROLL REVEAL -->
 <script>
 (function() {
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
       if (entry.isIntersecting) {
         var el = entry.target;
-        // For stagger parents, mark each child with .visible staggered
         if (el.classList.contains('reveal-stagger')) {
           var children = el.children;
           for (var i = 0; i < children.length; i++) {
@@ -1672,7 +1756,6 @@ footer {
     });
   }, { threshold: 0.12 });
 
-  // Observe all animated elements
   var targets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-stagger');
   targets.forEach(function(el) { observer.observe(el); });
 })();
