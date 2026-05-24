@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hall of Fame | Game Hub Hoshiarpur</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --neon-pink: #ff2d78;
+  --neon-cyan: #00f5ff;
+  --neon-gold: #ffd700;
+  --neon-green: #39ff14;
+  --bg-deep: #060010;
+  --bg-card: rgba(255,255,255,0.03);
+  --border-glow: rgba(255, 45, 120, 0.3);
+  --text-bright: #ffffff;
+  --text-muted: rgba(255,255,255,0.72);
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-kids: 'Fredoka One', cursive;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-bright);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ===== BACKGROUND ===== */
+.bg-grid {
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 20s linear infinite;
+}
+@keyframes gridDrift {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(60px); }
+}
+
+.orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(90px); pointer-events: none; z-index: -1;
+}
+.orb-1 {
+  width:500px; height:500px;
+  background: radial-gradient(circle, rgba(255,45,120,0.15), transparent 70%);
+  top:-100px; left:-100px;
+}
+.orb-2 {
+  width:600px; height:600px;
+  background: radial-gradient(circle, rgba(0,245,255,0.10), transparent 70%);
+  bottom:-150px; right:-150px;
+}
+.orb-3 {
+  width:350px; height:350px;
+  background: radial-gradient(circle, rgba(255,215,0,0.07), transparent 70%);
+  top:40%; left:50%; transform:translate(-50%,-50%);
+}
+
+/* ===== NAVBAR ===== */
+header {
+  position: fixed; top:0; width:100%; z-index:999;
+  padding: 0 6%;
+  background: linear-gradient(180deg, rgba(6,0,16,0.96) 0%, rgba(6,0,16,0) 100%);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,45,120,0.12);
+}
+nav {
+  display:flex; align-items:center;
+  justify-content:space-between; height:70px;
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size:26px; letter-spacing:3px;
+  color: var(--text-bright); text-decoration:none;
+  display:flex; align-items:center; gap:10px;
+}
+.nav-logo span { color: var(--neon-pink); }
+.nav-logo .dot {
+  width:8px; height:8px;
+  background: var(--neon-cyan); border-radius:50%;
+  display:inline-block;
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.2} }
+
+.nav-links { display:flex; gap:36px; list-style:none; }
+.nav-links a {
+  color: var(--text-muted); text-decoration:none;
+  font-family: var(--font-mono); font-size:12px;
+  letter-spacing:2px; text-transform:uppercase;
+  transition: color 0.2s, text-shadow 0.2s;
+  position:relative;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0;
+  width:0; height:1px; background: var(--neon-cyan);
+  transition: width 0.3s ease;
+}
+.nav-links a:hover { color: var(--neon-cyan); text-shadow: 0 0 12px var(--neon-cyan); }
+.nav-links a:hover::after { width:100%; }
+.nav-links a.active { color: var(--neon-gold); }
+.nav-links a.active::after { width:100%; background: var(--neon-gold); }
+
+.nav-cta {
+  font-family: var(--font-mono); font-size:11px;
+  letter-spacing:2px; text-transform:uppercase;
+  color: var(--bg-deep); background: var(--neon-pink);
+  padding:10px 20px; border-radius:3px;
+  text-decoration:none; font-weight:700;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+.nav-cta:hover {
+  box-shadow: 0 0 24px var(--neon-pink), 0 0 50px rgba(255,45,120,0.4);
+  transform: translateY(-2px);
+}
+
+/* ===== PAGE HERO ===== */
+.page-hero {
+  padding: 140px 6% 80px;
+  text-align: center;
+  position: relative;
+}
+
+.page-hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size:11px; letter-spacing:4px;
+  color: var(--neon-gold); text-transform:uppercase;
+  margin-bottom:20px;
+  display:flex; align-items:center; justify-content:center; gap:16px;
+  animation: fadeUp 0.6s ease both;
+}
+.page-hero-eyebrow::before,
+.page-hero-eyebrow::after {
+  content:''; display:block;
+  width:40px; height:1px; background: var(--neon-gold);
+}
+
+.page-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(70px, 11vw, 140px);
+  letter-spacing:4px; line-height:0.9;
+  margin-bottom:24px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.page-hero-title .accent { color: var(--neon-gold); display:block; text-shadow: 0 0 80px rgba(255,215,0,0.5); }
+.page-hero-title .dim    { color: rgba(255,255,255,0.18); }
+
+.page-hero-sub {
+  font-size:16px; color: var(--text-muted);
+  font-family: var(--font-mono); letter-spacing:1px;
+  max-width:480px; margin:0 auto 40px;
+  line-height:1.8;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+
+
+/* Divider line under hero */
+.hero-divider {
+  width:100%; max-width:1300px;
+  margin:60px auto 0;
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--neon-gold), transparent);
+  opacity:0.25;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:none; }
+}
+
+
+
+/* ===== WINNERS GRID ===== */
+.winners-section {
+  max-width:1300px; margin:40px auto 0;
+  padding:0 6% 120px;
+}
+
+.winners-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap:24px;
+}
+
+/* ===== WINNER CARD ===== */
+.winner-card {
+  background: var(--bg-card);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;
+  overflow:hidden;
+  position:relative;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  cursor:default;
+}
+
+/* Rank-based top accent */
+.winner-card[data-rank="1"]  { border-color: rgba(255,215,0,0.35); }
+.winner-card[data-rank="2"]  { border-color: rgba(192,192,192,0.35); }
+.winner-card[data-rank="3"]  { border-color: rgba(205,127,50,0.35); }
+
+.winner-card[data-rank="1"]::before { background: linear-gradient(90deg, var(--neon-gold), transparent); }
+.winner-card[data-rank="2"]::before { background: linear-gradient(90deg, #c0c0c0, transparent); }
+.winner-card[data-rank="3"]::before { background: linear-gradient(90deg, #cd7f32, transparent); }
+
+.winner-card::before {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, var(--neon-pink), transparent);
+  opacity:0.6;
+  transition: opacity 0.3s;
+}
+
+.winner-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 24px 60px rgba(255,45,120,0.15);
+  border-color: rgba(255,45,120,0.3);
+}
+.winner-card[data-rank="1"]:hover { box-shadow: 0 24px 60px rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.5); }
+.winner-card[data-rank="2"]:hover { box-shadow: 0 24px 60px rgba(192,192,192,0.15); border-color: rgba(192,192,192,0.4); }
+.winner-card[data-rank="3"]:hover { box-shadow: 0 24px 60px rgba(205,127,50,0.15); border-color: rgba(205,127,50,0.4); }
+
+.winner-card:hover::before { opacity:1; }
+
+/* Photo area */
+.winner-photo {
+  width:100%; height:220px;
+  background: rgba(255,255,255,0.03);
+  position:relative; overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.winner-photo img {
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+  transition: transform 0.5s ease;
+}
+
+.winner-card:hover .winner-photo img { transform:scale(1.06); }
+
+/* Placeholder — shown when no img */
+.winner-ph {
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px;
+  background: linear-gradient(160deg, rgba(255,45,120,0.05) 0%, rgba(0,245,255,0.04) 100%);
+}
+
+.ph-avatar {
+  width:72px; height:72px;
+  border-radius:50%;
+  background: rgba(255,255,255,0.06);
+  border:2px dashed rgba(255,255,255,0.12);
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px;
+}
+
+.ph-label {
+  font-family: var(--font-mono);
+  font-size:9px; letter-spacing:2px;
+  color: rgba(255,255,255,0.18);
+  text-transform:uppercase;
+}
+
+
+
+
+
+
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  grid-column: 1/-1;
+  text-align:center; padding:80px 20px;
+  display:flex; flex-direction:column;
+  align-items:center; gap:16px;
+}
+.empty-state .es-icon { font-size:60px; opacity:0.25; }
+.empty-state p {
+  font-family: var(--font-mono); font-size:13px;
+  letter-spacing:2px; color:rgba(255,255,255,0.2);
+  text-transform:uppercase;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding:40px 6%;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.footer-logo { font-family:var(--font-display); font-size:22px; letter-spacing:3px; }
+.footer-logo span { color:var(--neon-pink); }
+.footer-copy { font-size:12px; color:rgba(255,255,255,0.2); font-family:var(--font-mono); letter-spacing:1px; }
+.footer-links { display:flex; gap:24px; }
+.footer-links a {
+  font-family:var(--font-mono); font-size:11px;
+  letter-spacing:2px; color:rgba(255,255,255,0.25);
+  text-decoration:none; text-transform:uppercase; transition:color 0.2s;
+}
+.footer-links a:hover { color:var(--neon-cyan); }
+
+/* ===== SCROLL REVEAL ===== */
+.reveal { opacity:0; transform:translateY(44px); transition:opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:none; }
+.reveal-stagger > * { opacity:0; transform:translateY(36px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.reveal-stagger > *.visible { opacity:1; transform:none; }
+.reveal-stagger > *:nth-child(1) { transition-delay:0s; }
+.reveal-stagger > *:nth-child(2) { transition-delay:0.08s; }
+.reveal-stagger > *:nth-child(3) { transition-delay:0.16s; }
+.reveal-stagger > *:nth-child(4) { transition-delay:0.24s; }
+.reveal-stagger > *:nth-child(5) { transition-delay:0.32s; }
+.reveal-stagger > *:nth-child(6) { transition-delay:0.40s; }
+.reveal-stagger > *:nth-child(7) { transition-delay:0.48s; }
+.reveal-stagger > *:nth-child(8) { transition-delay:0.56s; }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px) {
+  .nav-links { display:none; }
+  .how-to-box { flex-direction:column; gap:14px; padding:22px 22px; }
+  footer { flex-direction:column; gap:20px; text-align:center; }
+  .winners-grid { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:480px) {
+  .winners-grid { grid-template-columns:1fr; }
+  .page-hero { padding:130px 6% 60px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAVBAR -->
+<header>
+  <nav>
+    <a href="index.html" class="nav-logo">GAME<span>HUB</span> <div class="dot"></div></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#games">Games</a></li>
+      <li><a href="index.html#parents">Parents</a></li>
+      <li><a href="index.html#gallery">Gallery</a></li>
+      <li><a href="HallOfFame.html" class="active">Hall of Fame</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <a href="index.html#contact" class="nav-cta">Book Now</a>
+  </nav>
+</header>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="page-hero-eyebrow">Game Hub Hoshiarpur</div>
+  <h1 class="page-hero-title">
+    <span class="dim">HALL</span>
+    <span class="accent">OF FAME</span>
+  </h1>
+  <p class="page-hero-sub">
+    The legends of Game Hub — our champions and winners, celebrated forever.
+  </p>
+  <div class="hero-divider"></div>
+</section>
+
+
+
+<!-- WINNERS GRID -->
+<div class="winners-section">
+  <div class="winners-grid reveal-stagger" id="winners-grid">
+    <!-- Cards injected by JS -->
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">GAME<span>HUB</span></div>
+  <div class="footer-copy">© 2026 Game Hub Hoshiarpur &nbsp;|&nbsp; Designed by Ankít Walia</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#games">Games</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+/* =================================================
+   WINNERS DATA — EDIT THIS SECTION TO ADD WINNERS
+   =================================================
+   Fields:
+     name   : Winner's display name
+     game   : "PlayStation 5" | "Virtual Reality" | "Tournament" | "Birthday Special"
+     date   : Any date string, e.g. "May 2026"
+     rank   : 1 = Gold  2 = Silver  3 = Bronze  4+ = Other
+     photo  : Path to photo, e.g. "winners/rahul.jpg"
+              Leave as "" to show placeholder avatar
+   ================================================= */
+const WINNERS = [
+  {
+    name:  "Rahul Singh",
+    game:  "Tournament",
+    date:  "May 2026",
+    rank:  1,
+    photo: ""   // e.g. "winners/rahul.jpg"
+  },
+  {
+    name:  "Priya Sharma",
+    game:  "PlayStation 5",
+    date:  "May 2026",
+    rank:  1,
+    photo: ""
+  },
+  {
+    name:  "Arjun Verma",
+    game:  "Virtual Reality",
+    date:  "April 2026",
+    rank:  2,
+    photo: ""
+  },
+  {
+    name:  "Neha Kapoor",
+    game:  "Tournament",
+    date:  "April 2026",
+    rank:  2,
+    photo: ""
+  },
+  {
+    name:  "Dev Malhotra",
+    game:  "PlayStation 5",
+    date:  "March 2026",
+    rank:  3,
+    photo: ""
+  },
+  {
+    name:  "Simran Kaur",
+    game:  "Birthday Special",
+    date:  "March 2026",
+    rank:  1,
+    photo: ""
+  },
+  {
+    name:  "Kunal Gupta",
+    game:  "Virtual Reality",
+    date:  "February 2026",
+    rank:  1,
+    photo: ""
+  },
+  {
+    name:  "Ananya Bose",
+    game:  "Tournament",
+    date:  "February 2026",
+    rank:  3,
+    photo: ""
+  }
+];
+/* ======= END OF WINNERS DATA ======= */
+
+
+/* ---- Build a card ---- */
+function buildCard(w) {
+  const photoHTML = w.photo
+    ? `<img src="${w.photo}" alt="${w.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=winner-ph><div class=ph-avatar>🏆</div><div class=ph-label>Photo Coming Soon</div></div>'">`
+    : `<div class="winner-ph"><div class="ph-avatar">🏆</div><div class="ph-label">Photo Coming Soon</div></div>`;
+
+  return `
+    <div class="winner-card" data-rank="${w.rank}" data-game="${w.game}">
+      <div class="winner-photo">
+        ${photoHTML}
+      </div>
+    </div>`;
+}
+
+/* ---- Render grid ---- */
+function renderGrid(filter) {
+  const grid = document.getElementById("winners-grid");
+  const list = filter === "all" ? WINNERS : WINNERS.filter(w => w.game === filter);
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="es-icon">🏆</div>
+        <p>No champions yet in this category</p>
+      </div>`;
+  } else {
+    grid.innerHTML = list.map(buildCard).join("");
+    /* re-trigger stagger reveal */
+    const children = grid.children;
+    for (let i = 0; i < children.length; i++) {
+      children[i].style.transitionDelay = (i * 0.07) + "s";
+      setTimeout(() => children[i].classList.add("visible"), 50);
+    }
+  }
+
+}
+
+/* ---- Initial render ---- */
+renderGrid("all");
+
+/* ---- Scroll reveal ---- */
+(function() {
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        if (el.classList.contains("reveal-stagger")) {
+          Array.from(el.children).forEach(c => c.classList.add("visible"));
+        } else {
+          el.classList.add("visible");
+        }
+        obs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll(".reveal, .reveal-stagger").forEach(el => obs.observe(el));
+})();
+</script>
+
+</body>
+</html>
