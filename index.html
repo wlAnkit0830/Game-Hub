@@ -697,7 +697,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 
     <div class="launch-actions">
       <a href="https://wa.me/917696200489?text=%F0%9F%8E%AE%20Hi%20Game%20Hub%21%20I%20want%20to%20book%20a%20GTA%206%20session%20for%20launch%20week%20%28Nov%2019%29." target="_blank" rel="noopener" class="btn btn-primary">Book a GTA 6 session <svg class="ico"><use href="#i-arrow"/></svg></a>
-      <button class="btn btn-glass sound-btn" id="soundBtn" hidden><span class="live-dot"></span><svg class="ico"><use href="#i-volume"/></svg>Turn sound on</button>
+      <button class="btn btn-glass sound-btn" id="soundBtn" hidden aria-pressed="true"><span class="live-dot"></span><svg class="ico"><use href="#i-volume"/></svg><span id="soundLabel">Mute</span></button>
       <a href="#" class="btn btn-glass" id="watchBtn" target="_blank" rel="noopener">Watch full trailer <svg class="ico"><use href="#i-link"/></svg></a>
     </div>
   </div>
@@ -929,8 +929,11 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
- 
-  var TRAILER_LINK = 'https://youtu.be/VQRLujxTm3c?si=hV_o9qIyry7aFEm4';
+  /* =======================================================
+     TRAILER: paste your YouTube link between the quotes.
+     Any normal YouTube link works (watch?v=..., youtu.be/..., or embed).
+     ======================================================= */
+  var TRAILER_LINK = 'PASTE_YOUTUBE_LINK_HERE';
   var FALLBACK_URL = 'https://www.youtube.com/results?search_query=GTA+6+official+trailer';
 
   function youtubeId(link) {
@@ -990,12 +993,29 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   var watchBtn = document.getElementById('watchBtn');
   watchBtn.href = id ? ('https://www.youtube.com/watch?v=' + id) : FALLBACK_URL;
 
-  function playBackground(muted) {
+  var soundLabel = document.getElementById('soundLabel');
+  var muted = true;      /* starts muted: browsers block sound until the visitor interacts */
+  var unlocked = false;
+
+  function sendCommand(func) {
+    var f = bg.querySelector('iframe');
+    if (f && f.contentWindow) {
+      f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), '*');
+    }
+  }
+
+  function setSound(on) {
+    muted = !on;
+    sendCommand(on ? 'unMute' : 'mute');
+    soundLabel.textContent = on ? 'Mute' : 'Sound on';
+    soundBtn.setAttribute('aria-pressed', String(on));
+  }
+
+  function playBackground() {
     if (!id || reduce) return;   /* reduced-motion visitors keep the still image */
     var frame = document.createElement('iframe');
     frame.src = 'https://www.youtube-nocookie.com/embed/' + id +
-      '?autoplay=1&mute=' + (muted ? 1 : 0) +
-      '&loop=1&playlist=' + id +
+      '?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=' + id +
       '&controls=0&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1';
     frame.allow = 'autoplay; encrypted-media; picture-in-picture';
     frame.title = 'GTA 6 trailer';
@@ -1007,13 +1027,21 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   if (id) {
     var poster = document.getElementById('launchPoster');
     if (poster) poster.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
-    playBackground(true);
+    playBackground();
     soundBtn.hidden = false;
-    soundBtn.addEventListener('click', function () {
-      var old = bg.querySelector('iframe');
-      if (old) old.remove();
-      playBackground(false);
-      soundBtn.hidden = true;
+
+    soundBtn.addEventListener('click', function () { setSound(muted); });
+
+    /* Turn sound on at the first real interaction with the page */
+    var unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
+    var unlock = function () {
+      if (unlocked) return;
+      unlocked = true;
+      unlockEvents.forEach(function (ev) { window.removeEventListener(ev, unlock); });
+      setSound(true);
+    };
+    unlockEvents.forEach(function (ev) {
+      window.addEventListener(ev, unlock, { passive: true });
     });
   }
 
