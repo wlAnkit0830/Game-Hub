@@ -73,6 +73,10 @@
   --t-fast: 0.2s;
 }
 
+/* Booking steps are <section> tags, so cancel the page-section spacing */
+#bookForm section.wiz { padding: 0; margin: 0; display: block; }
+#bookForm .wiz { position: static; }
+
 /* Hidden elements stay hidden, even when they also have display rules */
 [hidden] { display: none !important; }
 
