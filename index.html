@@ -65,7 +65,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
 
 .ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-.ico-fill { fill: currentColor; stroke: none; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 section { padding: var(--section-y) 0; position: relative; }
@@ -110,11 +109,19 @@ section { padding: var(--section-y) 0; position: relative; }
 .btn .ico { width: 18px; height: 18px; transition: translate var(--t) var(--ease); }
 .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 28px -8px rgba(124,108,255,0.7); }
 .btn-ghost { border-color: var(--line-strong); color: var(--text); background: rgba(255,255,255,0.03); }
+.btn-glass {
+  border-color: rgba(255,255,255,0.22);
+  color: var(--text);
+  background: rgba(10,10,15,0.5);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
 .btn-light { background: var(--text); color: var(--bg); }
 .btn-sm { padding: 10px 16px; font-size: 14px; border-radius: 12px; }
 @media (hover: hover) {
   .btn-primary:hover { background: #8d7fff; }
   .btn-ghost:hover { border-color: var(--text-2); background: rgba(255,255,255,0.06); }
+  .btn-glass:hover { border-color: rgba(255,255,255,0.45); }
   .btn-light:hover { background: #fff; }
   .btn:hover .ico { translate: 3px 0; }
 }
@@ -144,9 +151,10 @@ section { padding: var(--section-y) 0; position: relative; }
   border-radius: 10px;
   background: linear-gradient(140deg, var(--accent), #4f3fe0);
   display: grid; place-items: center;
+  font-size: 17px;
+  line-height: 1;
   box-shadow: 0 6px 18px -6px rgba(124,108,255,0.8);
 }
-.logo-mark .ico { width: 18px; height: 18px; color: #fff; stroke-width: 2.2; }
 .logo b { color: var(--accent); font-weight: 800; }
 
 .nav-links { display: flex; gap: 4px; list-style: none; }
@@ -161,6 +169,7 @@ section { padding: var(--section-y) 0; position: relative; }
   transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
 }
 .nav-links a.active, .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+.nav-links a.gta-link { color: var(--coral); }
 
 .nav-right { display: flex; align-items: center; gap: 10px; }
 .nav-toggle {
@@ -198,14 +207,95 @@ section { padding: var(--section-y) 0; position: relative; }
 }
 
 /* =========================================================
-   HERO
+   GTA 6 — FULL-SCREEN TRAILER BACKGROUND (priority section)
    ========================================================= */
-.hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; padding: 136px 0 88px; overflow: hidden; }
+.launch {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 120px 0 80px;
+  background: #000;
+  isolation: isolate;
+}
+.launch-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+.launch-bg img,
+.launch-bg iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: max(100%, 177.78vh);
+  height: max(100%, 56.25vw);
+  border: 0;
+  object-fit: cover;
+  pointer-events: none;
+}
+/* Dark veil keeps the text readable over bright footage */
+.launch-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(10,10,15,0.35) 0%, rgba(10,10,15,0.55) 45%, rgba(10,10,15,0.95) 100%),
+    radial-gradient(800px 500px at 0% 50%, rgba(10,10,15,0.7), transparent 70%);
+}
+.launch-content { max-width: 760px; }
+.launch .chip { background: rgba(255,122,89,0.18); color: #ffb29c; }
+.launch h2 {
+  font-size: clamp(56px, 9vw, 120px);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  margin-bottom: 18px;
+  text-shadow: 0 6px 40px rgba(0,0,0,0.5);
+}
+.launch-date {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: #ffb29c;
+  margin-bottom: 36px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 36px; max-width: 560px; }
+.cd {
+  background: rgba(10,10,15,0.6);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  padding: 18px 6px 14px;
+  text-align: center;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+.cd-num { display: block; font-size: clamp(38px, 5.4vw, 64px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.cd-num.tick { animation: tick 0.5s var(--ease); }
+@keyframes tick { from { translate: 0 -30%; opacity: 0.2; } to { translate: 0 0; opacity: 1; } }
+.cd-label { display: block; margin-top: 8px; font-size: 12px; color: var(--text-2); font-weight: 600; }
+.cd-done { display: none; font-size: 40px; font-weight: 800; color: var(--mint); margin-bottom: 32px; text-shadow: 0 2px 16px rgba(0,0,0,0.6); }
+.cd-done.show { display: block; }
+
+.launch-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.sound-btn[hidden] { display: none; }
+.sound-btn .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); animation: pulse 2s var(--ease) infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,122,89,0.5); } 70%, 100% { box-shadow: 0 0 0 10px rgba(255,122,89,0); } }
+
+/* =========================================================
+   HOME INTRO (Game Hub)
+   ========================================================= */
+.hero { min-height: auto; display: flex; align-items: center; padding: 120px 0 88px; overflow: hidden; }
 .hero-glow {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(640px 420px at 85% 15%, rgba(124,108,255,0.22), transparent 70%),
-    radial-gradient(520px 380px at 0% 90%, rgba(46,230,180,0.08), transparent 70%);
+    radial-gradient(640px 420px at 85% 15%, rgba(124,108,255,0.18), transparent 70%),
+    radial-gradient(520px 380px at 0% 90%, rgba(46,230,180,0.07), transparent 70%);
 }
 .hero-grid-wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
 .hero h1 {
@@ -219,7 +309,6 @@ section { padding: var(--section-y) 0; position: relative; }
 .hero .lead { margin-bottom: 36px; }
 .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* Bento tiles */
 .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .tile {
   background: var(--surface);
@@ -235,14 +324,12 @@ section { padding: var(--section-y) 0; position: relative; }
   background: var(--accent-soft);
   color: #b7aeff;
   display: grid; place-items: center;
+  flex-shrink: 0;
 }
 .tile h3 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
 .tile p { font-size: 14px; color: var(--text-2); }
 .tile.wide { grid-column: span 2; flex-direction: row; align-items: center; justify-content: space-between; }
 .tile.wide .tile-txt { display: flex; flex-direction: column; gap: 4px; }
-.live { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--mint); font-weight: 700; }
-.live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); animation: pulse 2s var(--ease) infinite; }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46,230,180,0.5); } 70%, 100% { box-shadow: 0 0 0 10px rgba(46,230,180,0); } }
 @media (hover: hover) { .tile:hover { border-color: var(--line-strong); translate: 0 -3px; } }
 
 .stats {
@@ -254,67 +341,6 @@ section { padding: var(--section-y) 0; position: relative; }
 }
 .stat-num { font-size: clamp(28px, 3.2vw, 40px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
 .stat-label { font-size: 14px; color: var(--text-3); margin-top: 8px; }
-
-/* =========================================================
-   GTA 6
-   ========================================================= */
-.launch { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.launch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
-.launch h2 { font-size: clamp(42px, 5.6vw, 72px); font-weight: 800; line-height: 1; letter-spacing: -0.04em; margin-bottom: 16px; }
-.launch-date { font-family: var(--mono); font-size: 13px; color: var(--coral); margin-bottom: 18px; }
-.launch .desc { color: var(--text-2); max-width: 480px; margin-bottom: 32px; }
-
-.countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 32px; max-width: 520px; }
-.cd { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 6px 12px; text-align: center; }
-.cd-num { display: block; font-size: clamp(34px, 4.4vw, 52px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-.cd-num.tick { animation: tick 0.5s var(--ease); }
-@keyframes tick { from { translate: 0 -30%; opacity: 0.2; } to { translate: 0 0; opacity: 1; } }
-.cd-label { display: block; margin-top: 8px; font-size: 12px; color: var(--text-3); font-weight: 600; }
-.cd-done { display: none; font-size: 36px; font-weight: 800; color: var(--mint); margin-bottom: 32px; }
-.cd-done.show { display: block; }
-
-/* Trailer */
-.video {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  border: 1px solid var(--line-strong);
-  background: linear-gradient(135deg, #2a1f6b 0%, #0f0c26 55%, #3a1a2e 100%);
-  box-shadow: 0 30px 80px -30px rgba(124,108,255,0.45);
-}
-.video-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: scale 0.8s var(--ease); }
-.video::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(180deg, rgba(10,10,15,0) 40%, rgba(10,10,15,0.7) 100%);
-}
-.play {
-  position: absolute; left: 50%; top: 50%;
-  translate: -50% -50%;
-  z-index: 2;
-  width: 84px; height: 84px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.95);
-  color: #0a0a0f;
-  display: grid; place-items: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
-  transition: scale 0.3s var(--ease);
-}
-.play .ico { width: 30px; height: 30px; margin-left: 4px; }
-.play:active { scale: 0.94; }
-.video-cap {
-  position: absolute; left: 18px; bottom: 16px; z-index: 2;
-  font-size: 14px; font-weight: 700;
-  padding: 8px 12px; border-radius: 10px;
-  background: rgba(10,10,15,0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-@media (hover: hover) {
-  .play:hover { scale: 1.08; }
-  .video:hover .video-poster { scale: 1.03; }
-}
 
 /* =========================================================
    ARCADE
@@ -560,7 +586,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
    RESPONSIVE
    ========================================================= */
 @media (max-width: 1040px) {
-  .hero-grid-wrap, .launch-grid, .split, .visit-grid, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+  .hero-grid-wrap, .split, .visit-grid, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); row-gap: 28px; }
 }
@@ -582,12 +608,12 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
    ========================================================= */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .live .dot, .cd-num.tick { animation: none; }
+  .cd-num.tick, .sound-btn .live-dot { animation: none; }
   .reveal { transition: opacity 0.4s ease; translate: 0 0; }
   .btn, .card, .tile, .feature, .contact-row, .wa, .kids { transition-duration: 0.2s; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .nav.scrolled, .nav-links, .map-bar, .kids { background: #14141d; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .nav.scrolled, .nav-links, .map-bar, .kids, .cd, .btn-glass { background: #14141d; backdrop-filter: none; -webkit-backdrop-filter: none; }
   .lightbox::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(6,6,10,0.97); }
 }
 @media (prefers-contrast: more) {
@@ -597,7 +623,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 </head>
 <body>
 
-<!-- ===================== ICON SPRITE (line icons, no emoji) ===================== -->
+<!-- ===================== ICON SPRITE ===================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-controller" viewBox="0 0 24 24"><path d="M7 8h10a5 5 0 0 1 4.9 6.1l-.6 2.6a2.5 2.5 0 0 1-4.3 1.1L15.5 16h-7l-1.5 1.8a2.5 2.5 0 0 1-4.3-1.1l-.6-2.6A5 5 0 0 1 7 8z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="15.5" cy="11.5" r=".6"/><circle cx="17.5" cy="13.5" r=".6"/></symbol>
   <symbol id="i-vr" viewBox="0 0 24 24"><path d="M3 9h18a2 2 0 0 1 2 2v3a3 3 0 0 1-3 3c-1.4 0-2-1-3-2.2H7c-1 1.2-1.6 2.2-3 2.2a3 3 0 0 1-3-3v-3a2 2 0 0 1 2-2z"/><path d="M8 12h.01M16 12h.01"/></symbol>
@@ -606,7 +632,6 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   <symbol id="i-party" viewBox="0 0 24 24"><path d="M4 20l4-12 8 8-12 4z"/><path d="M14 4v2M19 6l-1.4 1.4M21 11h-2M15 8l1.4-1.4"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></symbol>
   <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17l.6 1.6L21 19l-1.4.4L19 21l-.6-1.6L17 19l1.4-.4z"/></symbol>
-  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3.5l1.8 4.5-2.2 1.5a11 11 0 0 0 6 6l1.5-2.2L20 15.5V19a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/></symbol>
@@ -618,20 +643,21 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
   <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5M11 8v6M8 11h6"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8 6.8 19.5l1-5.8-4.2-4.1 5.8-.8z"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.5-6.5a1 1 0 0 0 0-1.8L9.5 4.6A1 1 0 0 0 8 5.5z" fill="currentColor" stroke="none"/></symbol>
-  <symbol id="i-logo" viewBox="0 0 24 24"><path d="M6 9h12a4 4 0 0 1 3.9 4.9l-.4 1.8a2 2 0 0 1-3.5.8L15 14.5H9l-2.9 2.9a2 2 0 0 1-3.5-.8l-.4-1.8A4 4 0 0 1 6 9z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
 </svg>
 
 <!-- ===================== NAV ===================== -->
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
     <a href="#home" class="logo" aria-label="Game Hub home">
-      <span class="logo-mark"><svg class="ico"><use href="#i-logo"/></svg></span>
+      <span class="logo-mark" aria-hidden="true">🎮</span>
       <span>Game<b>Hub</b></span>
     </a>
     <ul class="nav-links" id="navLinks">
+      <li><a href="#launch" class="gta-link">GTA 6</a></li>
+      <li><a href="#home">Home</a></li>
       <li><a href="#arcade">Arcade</a></li>
-      <li><a href="#launch">GTA 6</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#parents">Parents</a></li>
       <li><a href="#gallery">Gallery</a></li>
@@ -649,7 +675,35 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   </div>
 </header>
 
-<!-- ===================== HERO ===================== -->
+<!-- ===================== GTA 6 — FULL-SCREEN TRAILER (priority) ===================== -->
+<section id="launch" class="launch">
+  <div class="launch-bg" id="launchBg">
+    <img src="gta6-trailer.jpg" alt="" onerror="this.remove()" id="launchPoster">
+  </div>
+  <div class="launch-veil"></div>
+
+  <div class="wrap launch-content">
+    <span class="chip"><span class="dot"></span>Priority · Launch week</span>
+    <h2>GTA 6</h2>
+    <p class="launch-date">Releases Thursday, November 19, 2026</p>
+
+    <div class="countdown" id="countdown" aria-label="Time until GTA 6 launch">
+      <div class="cd"><span class="cd-num" id="cd-days">--</span><span class="cd-label">Days</span></div>
+      <div class="cd"><span class="cd-num" id="cd-hours">--</span><span class="cd-label">Hours</span></div>
+      <div class="cd"><span class="cd-num" id="cd-mins">--</span><span class="cd-label">Minutes</span></div>
+      <div class="cd"><span class="cd-num" id="cd-secs">--</span><span class="cd-label">Seconds</span></div>
+    </div>
+    <div class="cd-done" id="cd-done">It's out. Come play.</div>
+
+    <div class="launch-actions">
+      <a href="https://wa.me/917696200489?text=%F0%9F%8E%AE%20Hi%20Game%20Hub%21%20I%20want%20to%20book%20a%20GTA%206%20session%20for%20launch%20week%20%28Nov%2019%29." target="_blank" rel="noopener" class="btn btn-primary">Book a GTA 6 session <svg class="ico"><use href="#i-arrow"/></svg></a>
+      <button class="btn btn-glass sound-btn" id="soundBtn" hidden><span class="live-dot"></span><svg class="ico"><use href="#i-volume"/></svg>Turn sound on</button>
+      <a href="#" class="btn btn-glass" id="watchBtn" target="_blank" rel="noopener">Watch full trailer <svg class="ico"><use href="#i-link"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOME INTRO ===================== -->
 <section id="home" class="hero">
   <div class="hero-glow"></div>
   <div class="wrap">
@@ -692,39 +746,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   </div>
 </section>
 
-<!-- ===================== GTA 6 LAUNCH ===================== -->
-<section id="launch" class="launch">
-  <div class="wrap launch-grid">
-    <div class="reveal">
-      <span class="chip">Launch week</span>
-      <h2>GTA 6 is coming.</h2>
-      <p class="launch-date">Releases Thursday, November 19, 2026</p>
-      <p class="desc">Play the year's biggest release on our PlayStation 5 setups. Book your launch-week session before the slots fill up.</p>
-
-      <div class="countdown" id="countdown" aria-label="Time until GTA 6 launch">
-        <div class="cd"><span class="cd-num" id="cd-days">--</span><span class="cd-label">Days</span></div>
-        <div class="cd"><span class="cd-num" id="cd-hours">--</span><span class="cd-label">Hours</span></div>
-        <div class="cd"><span class="cd-num" id="cd-mins">--</span><span class="cd-label">Minutes</span></div>
-        <div class="cd"><span class="cd-num" id="cd-secs">--</span><span class="cd-label">Seconds</span></div>
-      </div>
-      <div class="cd-done" id="cd-done">It's out. Come play.</div>
-
-      <a href="https://wa.me/917696200489?text=%F0%9F%8E%AE%20Hi%20Game%20Hub%21%20I%20want%20to%20book%20a%20GTA%206%20session%20for%20launch%20week%20%28Nov%2019%29." target="_blank" rel="noopener" class="btn btn-primary">Book a GTA 6 session <svg class="ico"><use href="#i-arrow"/></svg></a>
-    </div>
-
-    <div class="reveal" data-d="2">
-      <div class="video" id="video">
-        <img class="video-poster" id="videoPoster" src="gta6-trailer.jpg" alt="GTA 6 trailer" onerror="this.remove()">
-        <button class="play" id="playBtn" aria-label="Play GTA 6 trailer">
-          <svg class="ico"><use href="#i-play"/></svg>
-        </button>
-        <span class="video-cap">Official trailer</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== ARCADE (photos 1–4) ===================== -->
+<!-- ===================== ARCADE ===================== -->
 <section id="arcade">
   <div class="wrap">
     <div class="section-head reveal">
@@ -791,7 +813,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   </div>
 </section>
 
-<!-- ===================== GALLERY (photos 9–16) ===================== -->
+<!-- ===================== GALLERY ===================== -->
 <section id="gallery">
   <div class="wrap">
     <div class="section-head reveal">
@@ -885,7 +907,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 <footer>
   <div class="wrap foot">
     <a href="#home" class="logo" aria-label="Back to top">
-      <span class="logo-mark"><svg class="ico"><use href="#i-logo"/></svg></span>
+      <span class="logo-mark" aria-hidden="true">🎮</span>
       <span>Game<b>Hub</b></span>
     </a>
     <small>© 2026 Game Hub Hoshiarpur · Designed by Ankít Walia</small>
@@ -907,8 +929,18 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* =======================================================
+     TRAILER: paste your YouTube link between the quotes.
+     Any normal YouTube link works (watch?v=..., youtu.be/..., or embed).
+     ======================================================= */
+  var TRAILER_LINK = 'PASTE_YOUTUBE_LINK_HERE';
+  var FALLBACK_URL = 'https://www.youtube.com/results?search_query=GTA+6+official+trailer';
 
-  var TRAILER_LINK = 'https://youtu.be/VQRLujxTm3c?si=hV_o9qIyry7aFEm4';
+  function youtubeId(link) {
+    var m = /(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/.exec(link || '');
+    return m ? m[1] : null;
+  }
+  var id = youtubeId(TRAILER_LINK);
 
   /* ---------- Nav ---------- */
   var nav = document.getElementById('nav');
@@ -940,8 +972,8 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
       links[e.target.id].classList.add('active');
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
-  Object.keys(links).forEach(function (id) {
-    var s = document.getElementById(id);
+  Object.keys(links).forEach(function (sid) {
+    var s = document.getElementById(sid);
     if (s) spy.observe(s);
   });
 
@@ -953,32 +985,40 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 
-  /* ---------- Trailer (loads YouTube only when played) ---------- */
-  var video = document.getElementById('video');
-  var playBtn = document.getElementById('playBtn');
-  var poster = document.getElementById('videoPoster');
-  var fallbackUrl = 'https://www.youtube.com/results?search_query=GTA+6+official+trailer';
+  /* ---------- GTA 6 background trailer ----------
+     Starts muted and looping as soon as the page opens (browsers block
+     sound until the visitor interacts). "Turn sound on" restarts it unmuted. */
+  var bg = document.getElementById('launchBg');
+  var soundBtn = document.getElementById('soundBtn');
+  var watchBtn = document.getElementById('watchBtn');
+  watchBtn.href = id ? ('https://www.youtube.com/watch?v=' + id) : FALLBACK_URL;
 
-  function youtubeId(link) {
-    var m = /(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/.exec(link || '');
-    return m ? m[1] : null;
-  }
-  var id = youtubeId(TRAILER_LINK);
-
-  if (id && poster) {
-    poster.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
-  }
-
-  playBtn.addEventListener('click', function () {
-    if (!id) { window.open(fallbackUrl, '_blank', 'noopener'); return; }
+  function playBackground(muted) {
+    if (!id || reduce) return;   /* reduced-motion visitors keep the still image */
     var frame = document.createElement('iframe');
-    frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+    frame.src = 'https://www.youtube-nocookie.com/embed/' + id +
+      '?autoplay=1&mute=' + (muted ? 1 : 0) +
+      '&loop=1&playlist=' + id +
+      '&controls=0&rel=0&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1';
+    frame.allow = 'autoplay; encrypted-media; picture-in-picture';
     frame.title = 'GTA 6 trailer';
-    frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-    frame.allowFullscreen = true;
-    video.innerHTML = '';
-    video.appendChild(frame);
-  });
+    frame.setAttribute('tabindex', '-1');
+    frame.setAttribute('aria-hidden', 'true');
+    bg.appendChild(frame);
+  }
+
+  if (id) {
+    var poster = document.getElementById('launchPoster');
+    if (poster) poster.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    playBackground(true);
+    soundBtn.hidden = false;
+    soundBtn.addEventListener('click', function () {
+      var old = bg.querySelector('iframe');
+      if (old) old.remove();
+      playBackground(false);
+      soundBtn.hidden = true;
+    });
+  }
 
   /* ---------- Lightbox ---------- */
   var photos = Array.prototype.map.call(document.querySelectorAll('.gallery .shot img'), function (img) {
