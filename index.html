@@ -257,6 +257,12 @@ section { padding: var(--section-y) 0; position: relative; }
   margin-bottom: 18px;
   text-shadow: 0 6px 40px rgba(0,0,0,0.5);
 }
+.launch-logo {
+  width: clamp(230px, 36vw, 480px);
+  height: auto;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 10px 40px rgba(0,0,0,0.6));
+}
 .launch-date {
   font-family: var(--mono);
   font-size: 14px;
@@ -684,7 +690,8 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 
   <div class="wrap launch-content">
     <span class="chip"><span class="dot"></span>Priority · Launch week</span>
-    <h2>GTA 6</h2>
+    <img class="launch-logo" src="gta6.png" alt="GTA 6" onerror="this.remove(); document.getElementById('launchTitle').hidden = false;">
+    <h2 id="launchTitle" hidden>GTA 6</h2>
     <p class="launch-date">Releases Thursday, November 19, 2026</p>
 
     <div class="countdown" id="countdown" aria-label="Time until GTA 6 launch">
@@ -933,7 +940,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
      TRAILER: paste your YouTube link between the quotes.
      Any normal YouTube link works (watch?v=..., youtu.be/..., or embed).
      ======================================================= */
-  var TRAILER_LINK = 'https://youtu.be/VQRLujxTm3c?si=hV_o9qIyry7aFEm4';
+  var TRAILER_LINK = 'https://youtu.be/VQRLujxTm3c';
   var FALLBACK_URL = 'https://www.youtube.com/results?search_query=GTA+6+official+trailer';
 
   function youtubeId(link) {
