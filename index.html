@@ -5,7 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Game Hub Hoshiarpur: PlayStation 5, VR experiences, tournaments and birthday parties in Krishna Nagar, Hoshiarpur.">
 <meta name="theme-color" content="#0a0a0f">
+<meta property="og:title" content="Game Hub | Hoshiarpur">
+<meta property="og:description" content="PlayStation 5, VR experiences, tournaments and birthday parties in Krishna Nagar, Hoshiarpur.">
+<meta property="og:type" content="website">
 <title>Game Hub | Hoshiarpur</title>
+
+<!-- Structured data: helps Google show your hours, address and phone -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Game Hub Hoshiarpur",
+  "telephone": "+91-7696200489",
+  "email": "gamehub.hsp@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Court Rd, Krishna Nagar",
+    "addressLocality": "Hoshiarpur",
+    "addressRegion": "Punjab",
+    "postalCode": "146001",
+    "addressCountry": "IN"
+  },
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "11:00", "closes": "22:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday","Sunday"], "opens": "10:00", "closes": "23:00" }
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -29,6 +56,7 @@
   --accent-soft: rgba(124,108,255,0.14);
   --mint: #2ee6b4;
   --coral: #ff7a59;
+  --wa: #25D366;
 
   --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -44,6 +72,9 @@
   --t: 0.5s;
   --t-fast: 0.2s;
 }
+
+/* Hidden elements stay hidden, even when they also have display rules */
+[hidden] { display: none !important; }
 
 /* =========================================================
    BASE
@@ -61,7 +92,8 @@ body {
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; }
-button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
 
 .ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
@@ -82,10 +114,65 @@ section { padding: var(--section-y) 0; position: relative; }
   margin-bottom: 20px;
 }
 .chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+.chip .dot.closed { background: var(--coral); }
 
 .h2 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 800; line-height: 1.04; letter-spacing: -0.035em; margin-bottom: 18px; }
 .lead { font-size: 18px; color: var(--text-2); max-width: 560px; }
 .section-head { margin-bottom: 56px; max-width: 640px; }
+
+/* =========================================================
+   LOADER
+   ========================================================= */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  transition: opacity 0.6s var(--ease), visibility 0.6s;
+}
+.loader.done { opacity: 0; visibility: hidden; }
+.loader-mark {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(140deg, var(--accent), #4f3fe0);
+  display: grid; place-items: center;
+  font-size: 30px;
+  animation: loaderIn 0.8s var(--ease) both;
+}
+@keyframes loaderIn { from { opacity: 0; scale: 0.8; } to { opacity: 1; scale: 1; } }
+
+/* Scroll progress */
+.progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 200;
+  background: linear-gradient(90deg, var(--accent), var(--mint));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+/* Back to top */
+.to-top {
+  position: fixed;
+  left: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 90;
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  display: grid; place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 12px;
+  transition: opacity var(--t) var(--ease), translate var(--t) var(--ease), visibility var(--t), border-color var(--t-fast), scale 0.12s ease-out;
+}
+.to-top.show { opacity: 1; visibility: visible; translate: 0 0; }
+.to-top:active { scale: 0.94; }
+@media (hover: hover) { .to-top:hover { border-color: var(--accent); } }
 
 /* =========================================================
    BUTTONS
@@ -97,27 +184,23 @@ section { padding: var(--section-y) 0; position: relative; }
   gap: 10px;
   padding: 14px 22px;
   border-radius: 14px;
-  font: inherit;
   font-weight: 700;
   font-size: 15px;
   text-decoration: none;
   border: 1px solid transparent;
   white-space: nowrap;
+  cursor: pointer;
   transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), scale 0.12s ease-out, translate var(--t) var(--ease);
 }
 .btn:active { scale: 0.97; }
 .btn .ico { width: 18px; height: 18px; transition: translate var(--t) var(--ease); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 8px 28px -8px rgba(124,108,255,0.7); }
 .btn-ghost { border-color: var(--line-strong); color: var(--text); background: rgba(255,255,255,0.03); }
-.btn-glass {
-  border-color: rgba(255,255,255,0.22);
-  color: var(--text);
-  background: rgba(10,10,15,0.5);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-}
+.btn-glass { border-color: rgba(255,255,255,0.22); color: var(--text); background: rgba(10,10,15,0.7); }
 .btn-light { background: var(--text); color: var(--bg); }
 .btn-sm { padding: 10px 16px; font-size: 14px; border-radius: 12px; }
+.btn-block { width: 100%; }
 @media (hover: hover) {
   .btn-primary:hover { background: #8d7fff; }
   .btn-ghost:hover { border-color: var(--text-2); background: rgba(255,255,255,0.06); }
@@ -207,7 +290,7 @@ section { padding: var(--section-y) 0; position: relative; }
 }
 
 /* =========================================================
-   GTA 6 — FULL-SCREEN TRAILER BACKGROUND (priority section)
+   GTA 6 — FULL-SCREEN TRAILER
    ========================================================= */
 .launch {
   position: relative;
@@ -220,12 +303,7 @@ section { padding: var(--section-y) 0; position: relative; }
   background: #000;
   isolation: isolate;
 }
-.launch-bg {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  overflow: hidden;
-}
+.launch-bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
 .launch-bg img,
 .launch-bg iframe {
   position: absolute;
@@ -238,7 +316,6 @@ section { padding: var(--section-y) 0; position: relative; }
   object-fit: cover;
   pointer-events: none;
 }
-/* Dark veil keeps the text readable over bright footage */
 .launch-veil {
   position: absolute;
   inset: 0;
@@ -249,6 +326,12 @@ section { padding: var(--section-y) 0; position: relative; }
 }
 .launch-content { max-width: 760px; }
 .launch .chip { background: rgba(255,122,89,0.18); color: #ffb29c; }
+.launch-logo {
+  width: clamp(230px, 36vw, 480px);
+  height: auto;
+  margin-bottom: 18px;
+  filter: drop-shadow(0 10px 40px rgba(0,0,0,0.6));
+}
 .launch h2 {
   font-size: clamp(56px, 9vw, 120px);
   font-weight: 800;
@@ -256,12 +339,6 @@ section { padding: var(--section-y) 0; position: relative; }
   letter-spacing: -0.05em;
   margin-bottom: 18px;
   text-shadow: 0 6px 40px rgba(0,0,0,0.5);
-}
-.launch-logo {
-  width: clamp(230px, 36vw, 480px);
-  height: auto;
-  margin-bottom: 18px;
-  filter: drop-shadow(0 10px 40px rgba(0,0,0,0.6));
 }
 .launch-date {
   font-family: var(--mono);
@@ -273,13 +350,11 @@ section { padding: var(--section-y) 0; position: relative; }
 
 .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 36px; max-width: 560px; }
 .cd {
-  background: rgba(10,10,15,0.6);
+  background: rgba(10,10,15,0.78);
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius);
   padding: 18px 6px 14px;
   text-align: center;
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
 }
 .cd-num { display: block; font-size: clamp(38px, 5.4vw, 64px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .cd-num.tick { animation: tick 0.5s var(--ease); }
@@ -289,14 +364,13 @@ section { padding: var(--section-y) 0; position: relative; }
 .cd-done.show { display: block; }
 
 .launch-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.sound-btn[hidden] { display: none; }
 .sound-btn .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); animation: pulse 2s var(--ease) infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,122,89,0.5); } 70%, 100% { box-shadow: 0 0 0 10px rgba(255,122,89,0); } }
 
 /* =========================================================
-   HOME INTRO (Game Hub)
+   HOME INTRO
    ========================================================= */
-.hero { min-height: auto; display: flex; align-items: center; padding: 120px 0 88px; overflow: hidden; }
+.hero { display: flex; align-items: center; padding: 120px 0 88px; overflow: hidden; }
 .hero-glow {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
@@ -345,7 +419,7 @@ section { padding: var(--section-y) 0; position: relative; }
   border-top: 1px solid var(--line);
   padding-top: 32px;
 }
-.stat-num { font-size: clamp(28px, 3.2vw, 40px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.stat-num { font-size: clamp(28px, 3.2vw, 40px); font-weight: 800; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-label { font-size: 14px; color: var(--text-3); margin-top: 8px; }
 
 /* =========================================================
@@ -422,8 +496,221 @@ section { padding: var(--section-y) 0; position: relative; }
 .age.c { color: var(--coral); border-color: rgba(255,122,89,0.4); }
 
 /* =========================================================
+   BOOK: calculator + booking wizard
+   ========================================================= */
+.book-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 20px; align-items: start; }
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+}
+.panel h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+.panel > p { color: var(--text-2); font-size: 14px; margin-bottom: 24px; }
+
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field.full { grid-column: 1 / -1; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.lbl { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  font-size: 15px;
+  transition: border-color var(--t-fast) var(--ease);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23a4a9bd' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.field textarea { resize: vertical; min-height: 80px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+.field input[aria-invalid="true"] { border-color: var(--coral); }
+.field-error { font-size: 13px; color: var(--coral); min-height: 0; }
+
+.calc-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.calc-result {
+  margin-top: 4px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--text-2);
+}
+.calc-result strong { display: block; font-size: 30px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+
+/* Wizard progress */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.step-bar { height: 4px; border-radius: 4px; background: var(--line-strong); transition: background-color var(--t) var(--ease); }
+.step-bar.on { background: var(--accent); }
+.step-label { font-size: 13px; color: var(--text-3); font-weight: 600; margin-bottom: 24px; }
+
+/* Step 1: mode cards */
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mode { position: relative; cursor: pointer; }
+.mode input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+.mode-card {
+  display: flex; flex-direction: column; gap: 10px;
+  height: 100%;
+  padding: 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease), translate var(--t) var(--ease), scale 0.12s ease-out;
+}
+.mode-card .ico { width: 26px; height: 26px; color: #b7aeff; }
+.mode-card b { font-size: 15px; font-weight: 700; }
+.mode-card small { font-size: 12px; color: var(--text-3); margin-top: -6px; }
+.mode:active .mode-card { scale: 0.97; }
+.mode input:checked + .mode-card {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent) inset, 0 10px 30px -14px rgba(124,108,255,0.8);
+}
+.mode input:focus-visible + .mode-card { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (hover: hover) { .mode:hover .mode-card { translate: 0 -2px; border-color: var(--text-3); } }
+
+/* Step 2: calendar dropdown */
+.cal { position: relative; }
+.cal-trigger {
+  width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-strong);
+  font-size: 15px; font-weight: 600;
+  text-align: left;
+  transition: border-color var(--t-fast) var(--ease), scale 0.12s ease-out;
+}
+.cal-trigger:active { scale: 0.99; }
+.cal-trigger .ico { color: #b7aeff; }
+.cal-trigger .chev { margin-left: auto; color: var(--text-3); transition: rotate var(--t) var(--ease); }
+.cal-trigger[aria-expanded="true"] { border-color: var(--accent); }
+.cal-trigger[aria-expanded="true"] .chev { rotate: 180deg; }
+.cal-value-empty { color: var(--text-3); font-weight: 500; }
+
+.cal-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  z-index: 20;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 24px 60px -18px rgba(0,0,0,0.7);
+  transform-origin: top center;
+  animation: calIn 0.35s var(--ease);
+}
+@keyframes calIn { from { opacity: 0; scale: 0.96; translate: 0 -6px; } to { opacity: 1; scale: 1; translate: 0 0; } }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cal-head strong { font-size: 15px; font-weight: 700; }
+.cal-nav {
+  width: 36px; height: 36px; border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  display: grid; place-items: center;
+  transition: border-color var(--t-fast), scale 0.12s ease-out;
+}
+.cal-nav:active { scale: 0.92; }
+.cal-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.cal-nav .ico { width: 16px; height: 16px; }
+@media (hover: hover) { .cal-nav:not(:disabled):hover { border-color: var(--accent); } }
+
+.cal-week, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-week span { text-align: center; font-size: 11px; font-weight: 700; color: var(--text-3); padding: 4px 0; text-transform: uppercase; letter-spacing: 0.04em; }
+.cal-day {
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  font-size: 14px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background-color var(--t-fast), color var(--t-fast), scale 0.12s ease-out;
+}
+.cal-day:active { scale: 0.9; }
+.cal-day:disabled { color: var(--text-3); opacity: 0.35; cursor: not-allowed; }
+.cal-day.today { box-shadow: inset 0 0 0 1px var(--mint); color: var(--mint); }
+.cal-day[aria-pressed="true"] { background: var(--accent); color: #fff; }
+@media (hover: hover) { .cal-day:not(:disabled):not([aria-pressed="true"]):hover { background: rgba(255,255,255,0.07); } }
+.cal-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 12px; color: var(--text-3); }
+
+/* Time chips */
+.time-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.time-chip {
+  padding: 11px 0;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  font-size: 14px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--t-fast), background-color var(--t-fast), color var(--t-fast), scale 0.12s ease-out;
+}
+.time-chip:active { scale: 0.95; }
+.time-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (hover: hover) { .time-chip:not([aria-pressed="true"]):hover { border-color: var(--text-2); } }
+
+/* Step 3: player stepper + review */
+.stepper {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  width: fit-content;
+}
+.stepper button {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  font-size: 22px; font-weight: 700; line-height: 1;
+  transition: background-color var(--t-fast), scale 0.12s ease-out;
+}
+.stepper button:active { scale: 0.92; }
+.stepper button:disabled { opacity: 0.3; cursor: not-allowed; }
+.stepper output { min-width: 56px; text-align: center; font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stepper-hint { font-size: 12px; color: var(--text-3); margin-top: 8px; }
+
+.review {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  border: 1px dashed var(--line-strong);
+  display: grid; gap: 10px;
+}
+.review-title { font-size: 12px; font-weight: 700; color: var(--text-3); letter-spacing: 0.04em; text-transform: uppercase; }
+.review-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.review-row span:first-child { color: var(--text-3); }
+.review-row span:last-child { font-weight: 700; text-align: right; }
+
+.wiz-nav { display: flex; gap: 10px; margin-top: 26px; }
+.wiz-nav .btn-primary { flex: 1; }
+.form-note { font-size: 13px; color: var(--text-3); margin-top: 14px; }
+
+/* =========================================================
    GALLERY
    ========================================================= */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.filter-btn {
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-2);
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), scale 0.12s ease-out;
+}
+.filter-btn:active { scale: 0.96; }
+.filter-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (hover: hover) { .filter-btn:hover:not([aria-pressed="true"]) { color: var(--text); border-color: var(--text-2); } }
+
 .gallery { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 210px; gap: 14px; }
 .shot {
   position: relative;
@@ -442,9 +729,7 @@ section { padding: var(--section-y) 0; position: relative; }
   position: absolute; right: 14px; bottom: 14px;
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 12px; border-radius: 10px;
-  background: rgba(10,10,15,0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(10,10,15,0.8);
   font-size: 13px; font-weight: 700;
   opacity: 0; translate: 0 8px;
   transition: opacity var(--t) var(--ease), translate var(--t) var(--ease);
@@ -462,7 +747,7 @@ section { padding: var(--section-y) 0; position: relative; }
 
 /* Lightbox */
 .lightbox { border: 0; padding: 0; background: transparent; width: min(94vw, 1080px); max-height: 92vh; color: var(--text); }
-.lightbox::backdrop { background: rgba(6,6,10,0.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.lightbox::backdrop { background: rgba(6,6,10,0.9); }
 .lightbox[open] { animation: lbIn 0.45s var(--ease); }
 @keyframes lbIn { from { opacity: 0; scale: 0.97; } to { opacity: 1; scale: 1; } }
 .lb-img { width: 100%; max-height: 78vh; object-fit: contain; border-radius: var(--radius-lg); background: var(--surface); }
@@ -484,7 +769,10 @@ section { padding: var(--section-y) 0; position: relative; }
    ========================================================= */
 .visit-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 40px; align-items: stretch; }
 .hours { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 26px; margin-top: 28px; }
-.hours h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text-2); }
+.hours-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.hours h3 { font-size: 14px; font-weight: 700; color: var(--text-2); }
+.status { font-size: 13px; font-weight: 700; color: var(--mint); }
+.status.closed { color: var(--coral); }
 .hours-row { display: flex; justify-content: space-between; padding: 14px 0; border-top: 1px solid var(--line); font-size: 15px; }
 .hours-row:first-of-type { border-top: 0; }
 .hours-row span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; }
@@ -496,9 +784,7 @@ section { padding: var(--section-y) 0; position: relative; }
   display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
   padding: 14px 16px;
   border-radius: var(--radius);
-  background: rgba(10,10,15,0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(10,10,15,0.95);
   border: 1px solid var(--line-strong);
 }
 .map-bar strong { display: block; font-size: 15px; }
@@ -521,7 +807,7 @@ section { padding: var(--section-y) 0; position: relative; }
 .contact-row strong { font-weight: 700; font-size: 15px; word-break: break-word; }
 @media (hover: hover) { .contact-row:hover { border-color: var(--line-strong); translate: 4px 0; } }
 
-.wa-head { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #25D366; margin-bottom: 16px; }
+.wa-head { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: var(--wa); margin-bottom: 16px; }
 .wa-list { display: grid; gap: 10px; }
 .wa {
   display: flex; align-items: center; gap: 16px;
@@ -534,9 +820,9 @@ section { padding: var(--section-y) 0; position: relative; }
   transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), translate var(--t) var(--ease), scale 0.12s ease-out;
 }
 .wa:active { scale: 0.98; }
-.wa .ico { color: #25D366; }
+.wa .ico { color: var(--wa); }
 .wa-label { flex: 1; }
-.wa .arrow { color: #25D366; transition: translate var(--t) var(--ease); }
+.wa .arrow { color: var(--wa); transition: translate var(--t) var(--ease); }
 @media (hover: hover) {
   .wa:hover { background: rgba(37,211,102,0.12); border-color: rgba(37,211,102,0.45); translate: 4px 0; }
   .wa:hover .arrow { translate: 3px 0; }
@@ -563,9 +849,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   display: flex; align-items: center; gap: 12px;
   padding: 10px 18px 10px 10px;
   border-radius: 999px;
-  background: rgba(20,20,29,0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(20,20,29,0.96);
   border: 1px solid var(--line-strong);
   box-shadow: 0 14px 36px -10px rgba(0,0,0,0.6);
   text-decoration: none;
@@ -592,7 +876,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
    RESPONSIVE
    ========================================================= */
 @media (max-width: 1040px) {
-  .hero-grid-wrap, .split, .visit-grid, .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+  .hero-grid-wrap, .split, .visit-grid, .contact-grid, .book-grid { grid-template-columns: 1fr; gap: 48px; }
   .cards { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); row-gap: 28px; }
 }
@@ -605,8 +889,12 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   .trust { grid-template-columns: 1fr; }
   .bento { grid-template-columns: 1fr; }
   .tile.wide { grid-column: auto; }
+  .fields, .calc-row { grid-template-columns: 1fr; }
+  .time-grid { grid-template-columns: repeat(3, 1fr); }
+  .panel { padding: 24px; }
   .kids-txt small { display: none; }
   .kids { right: 14px; }
+  .to-top { left: 14px; }
 }
 
 /* =========================================================
@@ -614,26 +902,28 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
    ========================================================= */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .cd-num.tick, .sound-btn .live-dot { animation: none; }
+  .cd-num.tick, .sound-btn .live-dot, .loader-mark, .cal-panel { animation: none; }
   .reveal { transition: opacity 0.4s ease; translate: 0 0; }
-  .btn, .card, .tile, .feature, .contact-row, .wa, .kids { transition-duration: 0.2s; }
+  .btn, .card, .tile, .feature, .contact-row, .wa, .kids, .to-top, .mode-card { transition-duration: 0.2s; }
 }
 @media (prefers-reduced-transparency: reduce) {
-  .nav.scrolled, .nav-links, .map-bar, .kids, .cd, .btn-glass { background: #14141d; backdrop-filter: none; -webkit-backdrop-filter: none; }
-  .lightbox::backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(6,6,10,0.97); }
+  .nav.scrolled, .nav-links { background: #14141d; backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media (prefers-contrast: more) {
   :root { --line: rgba(255,255,255,0.3); --line-strong: #ffffff; --text-2: #ffffff; --text-3: #dcdfea; }
 }
-/* Performance: solid panels over the video instead of live blur */
-.cd { background: rgba(10,10,15,0.78); backdrop-filter: none; -webkit-backdrop-filter: none; }
-.kids { background: rgba(20,20,29,0.96); backdrop-filter: none; -webkit-backdrop-filter: none; }
-.btn-glass { background: rgba(10,10,15,0.7); backdrop-filter: none; -webkit-backdrop-filter: none; }
-.map-bar { background: rgba(10,10,15,0.95); backdrop-filter: none; -webkit-backdrop-filter: none; }
-.launch-tag, .shot-zoom { backdrop-filter: none; -webkit-backdrop-filter: none; }
 </style>
 </head>
 <body>
+
+<!-- ===================== LOADER ===================== -->
+<div class="loader" id="loader" aria-hidden="true"><div class="loader-mark">🎮</div></div>
+
+<!-- ===================== PROGRESS + BACK TO TOP ===================== -->
+<div class="progress" id="progress" aria-hidden="true"></div>
+<button class="to-top" id="toTop" aria-label="Back to top">
+  <svg class="ico"><use href="#i-up"/></svg>
+</button>
 
 <!-- ===================== ICON SPRITE ===================== -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -650,6 +940,8 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 19.5l1.3-3.9A8 8 0 1 1 8.6 18.4L4 19.5z"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
   <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
@@ -657,6 +949,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8 6.8 19.5l1-5.8-4.2-4.1 5.8-.8z"/></symbol>
   <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></symbol>
   <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
 </svg>
 
 <!-- ===================== NAV ===================== -->
@@ -673,12 +966,13 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
       <li><a href="#about">About</a></li>
       <li><a href="#parents">Parents</a></li>
       <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#book">Book</a></li>
       <li><a href="#visit">Visit</a></li>
       <li><a href="HallOfFame.html">Hall of Fame</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-right">
-      <a href="#contact" class="btn btn-primary btn-sm nav-cta-desktop">Book now</a>
+      <a href="#book" class="btn btn-primary btn-sm nav-cta-desktop" data-magnetic>Book now</a>
       <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
         <svg class="ico i-open"><use href="#i-menu"/></svg>
         <svg class="ico i-close"><use href="#i-close"/></svg>
@@ -687,10 +981,10 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   </div>
 </header>
 
-<!-- ===================== GTA 6 — FULL-SCREEN TRAILER (priority) ===================== -->
+<!-- ===================== GTA 6 — FULL-SCREEN TRAILER ===================== -->
 <section id="launch" class="launch">
   <div class="launch-bg" id="launchBg">
-    <img src="gta6-trailer.jpg" alt="" onerror="this.remove()" id="launchPoster">
+    <img src="gta6.png" alt="" onerror="this.remove()" id="launchPoster" aria-hidden="true">
   </div>
   <div class="launch-veil"></div>
 
@@ -709,7 +1003,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
     <div class="cd-done" id="cd-done">It's out. Come play.</div>
 
     <div class="launch-actions">
-      <a href="https://wa.me/917696200489?text=%F0%9F%8E%AE%20Hi%20Game%20Hub%21%20I%20want%20to%20book%20a%20GTA%206%20session%20for%20launch%20week%20%28Nov%2019%29." target="_blank" rel="noopener" class="btn btn-primary">Book a GTA 6 session <svg class="ico"><use href="#i-arrow"/></svg></a>
+      <a href="#book" class="btn btn-primary" data-magnetic>Book a GTA 6 session <svg class="ico"><use href="#i-arrow"/></svg></a>
       <button class="btn btn-glass sound-btn" id="soundBtn" hidden aria-pressed="true"><span class="live-dot"></span><svg class="ico"><use href="#i-volume"/></svg><span id="soundLabel">Mute</span></button>
       <a href="#" class="btn btn-glass" id="watchBtn" target="_blank" rel="noopener">Watch full trailer <svg class="ico"><use href="#i-link"/></svg></a>
     </div>
@@ -722,11 +1016,11 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   <div class="wrap">
     <div class="hero-grid-wrap">
       <div>
-        <span class="chip reveal"><span class="dot"></span>Open now · Walk-ins welcome</span>
+        <span class="chip reveal"><span class="dot" id="openDot"></span><span id="openText">Walk-ins welcome</span></span>
         <h1 class="reveal" data-d="1">Play like a <span>pro.</span></h1>
         <p class="lead reveal" data-d="2">Hoshiarpur's gaming lounge in Krishna Nagar. PlayStation 5, VR experiences and weekly tournaments, for gamers of every age.</p>
         <div class="hero-actions reveal" data-d="3">
-          <a href="#contact" class="btn btn-primary">Book a session <svg class="ico"><use href="#i-arrow"/></svg></a>
+          <a href="#book" class="btn btn-primary" data-magnetic>Book a session <svg class="ico"><use href="#i-arrow"/></svg></a>
           <a href="#arcade" class="btn btn-ghost">Explore the arcade</a>
         </div>
       </div>
@@ -753,8 +1047,8 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
     <div class="stats reveal" data-d="4">
       <div><div class="stat-num">PS5</div><div class="stat-label">Latest consoles</div></div>
       <div><div class="stat-num">VR</div><div class="stat-label">Full immersion</div></div>
-      <div><div class="stat-num">7+</div><div class="stat-label">Events every week</div></div>
-      <div><div class="stat-num">4.9</div><div class="stat-label">Average rating</div></div>
+      <div><div class="stat-num"><span data-count="7" data-suffix="+">7+</span></div><div class="stat-label">Events every week</div></div>
+      <div><div class="stat-num"><span data-count="4.9" data-decimals="1">4.9</span></div><div class="stat-label">Average rating</div></div>
     </div>
   </div>
 </section>
@@ -826,6 +1120,139 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   </div>
 </section>
 
+<!-- ===================== BOOK: CALCULATOR + BOOKING WIZARD ===================== -->
+<section id="book">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="chip">Book a session</span>
+      <h2 class="h2">Plan your visit.</h2>
+      <p class="lead">Estimate the cost, then send your booking to us on WhatsApp with the details filled in.</p>
+    </div>
+
+    <div class="book-grid">
+      <!-- Calculator -->
+      <div class="panel reveal">
+        <h3>Estimate your session</h3>
+        <p>Pick a console, how long you'll play and how many people.</p>
+        <div class="calc-row">
+          <div class="field">
+            <label class="lbl" for="calcConsole">Console</label>
+            <select id="calcConsole">
+              <option value="PS5">PlayStation 5</option>
+              <option value="VR">VR experience</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="lbl" for="calcHours">Hours</label>
+            <input id="calcHours" type="number" min="1" max="8" step="1" value="1">
+          </div>
+          <div class="field">
+            <label class="lbl" for="calcPlayers">Players</label>
+            <input id="calcPlayers" type="number" min="1" max="10" step="1" value="1">
+          </div>
+        </div>
+        <div class="calc-result" id="calcResult" aria-live="polite"></div>
+      </div>
+
+      <!-- Booking wizard -->
+      <div class="panel reveal" data-d="1" id="bookPanel">
+        <h3>Request a booking</h3>
+        <p>Three quick steps. We confirm on WhatsApp.</p>
+
+        <div class="steps" aria-hidden="true">
+          <span class="step-bar on" data-s="1"></span>
+          <span class="step-bar" data-s="2"></span>
+          <span class="step-bar" data-s="3"></span>
+        </div>
+        <p class="step-label" id="stepLabel" aria-live="polite">Step 1 of 3 · Choose your mode</p>
+
+        <form id="bookForm" novalidate>
+          <!-- Step 1: mode -->
+          <section class="wiz" data-step="1">
+            <div class="mode-grid" role="radiogroup" aria-label="Game mode">
+              <label class="mode"><input type="radio" name="mode" value="PlayStation 5 gaming" checked><span class="mode-card"><svg class="ico"><use href="#i-controller"/></svg><b>PlayStation 5</b><small>Latest titles</small></span></label>
+              <label class="mode"><input type="radio" name="mode" value="GTA 6 launch-week session"><span class="mode-card"><svg class="ico"><use href="#i-star"/></svg><b>GTA 6</b><small>Launch-week session</small></span></label>
+              <label class="mode"><input type="radio" name="mode" value="VR experience"><span class="mode-card"><svg class="ico"><use href="#i-vr"/></svg><b>VR experience</b><small>Step inside</small></span></label>
+              <label class="mode"><input type="radio" name="mode" value="Tournament entry"><span class="mode-card"><svg class="ico"><use href="#i-trophy"/></svg><b>Tournament</b><small>Compete and win</small></span></label>
+              <label class="mode"><input type="radio" name="mode" value="Multiplayer group"><span class="mode-card"><svg class="ico"><use href="#i-users"/></svg><b>Multiplayer</b><small>Squad up</small></span></label>
+              <label class="mode"><input type="radio" name="mode" value="Birthday party"><span class="mode-card"><svg class="ico"><use href="#i-party"/></svg><b>Birthday party</b><small>Celebrate here</small></span></label>
+            </div>
+          </section>
+
+          <!-- Step 2: date + time -->
+          <section class="wiz" data-step="2" hidden>
+            <div class="field">
+              <span class="lbl" id="calLabel">Date</span>
+              <div class="cal" id="cal">
+                <button type="button" class="cal-trigger" id="calTrigger" aria-expanded="false" aria-haspopup="dialog" aria-labelledby="calLabel calValue">
+                  <svg class="ico"><use href="#i-calendar"/></svg>
+                  <span id="calValue" class="cal-value-empty">Pick a date</span>
+                  <svg class="ico chev"><use href="#i-chev"/></svg>
+                </button>
+                <div class="cal-panel" id="calPanel" hidden role="dialog" aria-label="Choose a date">
+                  <div class="cal-head">
+                    <button type="button" class="cal-nav" id="calPrev" aria-label="Previous month"><svg class="ico"><use href="#i-back"/></svg></button>
+                    <strong id="calMonth"></strong>
+                    <button type="button" class="cal-nav" id="calNext" aria-label="Next month"><svg class="ico"><use href="#i-arrow"/></svg></button>
+                  </div>
+                  <div class="cal-week" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+                  <div class="cal-grid" id="calGrid" role="grid"></div>
+                  <div class="cal-foot"><span>Up to 90 days ahead</span><span>Closed days are greyed out</span></div>
+                </div>
+              </div>
+              <input type="hidden" id="bkDate">
+              <span class="field-error" id="errDate"></span>
+            </div>
+
+            <div class="field" style="margin-top:22px;">
+              <span class="lbl" id="timeLabel">Start time</span>
+              <div class="time-grid" id="timeGrid" role="group" aria-labelledby="timeLabel"></div>
+              <span class="field-error" id="errTime"></span>
+            </div>
+          </section>
+
+          <!-- Step 3: squad + details -->
+          <section class="wiz" data-step="3" hidden>
+            <div class="field">
+              <span class="lbl" id="playersLabel">Players</span>
+              <div class="stepper" role="group" aria-labelledby="playersLabel">
+                <button type="button" id="pMinus" aria-label="Remove a player">−</button>
+                <output id="pCount" aria-live="polite">1</output>
+                <button type="button" id="pPlus" aria-label="Add a player">+</button>
+              </div>
+              <span class="stepper-hint">Up to 20 players per booking</span>
+            </div>
+
+            <div class="fields" style="margin-top:22px;">
+              <div class="field full">
+                <label class="lbl" for="bkName">Your name</label>
+                <input id="bkName" type="text" autocomplete="name" placeholder="e.g. Ankit">
+                <span class="field-error" id="errName"></span>
+              </div>
+              <div class="field">
+                <label class="lbl" for="bkPhone">Phone (optional)</label>
+                <input id="bkPhone" type="tel" autocomplete="tel" placeholder="+91">
+              </div>
+              <div class="field">
+                <label class="lbl" for="bkNote">Note (optional)</label>
+                <input id="bkNote" type="text" placeholder="Anything we should know?">
+              </div>
+            </div>
+
+            <div class="review" id="review" aria-live="polite"></div>
+          </section>
+
+          <div class="wiz-nav">
+            <button type="button" class="btn btn-ghost" id="prevBtn" hidden>Back</button>
+            <button type="button" class="btn btn-primary" id="nextBtn" data-magnetic>Next <svg class="ico"><use href="#i-arrow"/></svg></button>
+          </div>
+          <p class="form-note">Details are sent to us on WhatsApp. Nothing is saved on this page.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== GALLERY ===================== -->
 <section id="gallery">
   <div class="wrap">
@@ -834,15 +1261,17 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
       <h2 class="h2">Take a look inside.</h2>
     </div>
 
-    <div class="gallery">
-      <button class="shot reveal" data-index="0" aria-label="Open photo 1"><img src="9.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="1" aria-label="Open photo 2"><img src="10.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="2" aria-label="Open photo 3"><img src="11.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="3" aria-label="Open photo 4"><img src="12.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="4" aria-label="Open photo 5"><img src="13.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="5" aria-label="Open photo 6"><img src="14.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="6" aria-label="Open photo 7"><img src="15.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
-      <button class="shot reveal" data-index="7" aria-label="Open photo 8"><img src="16.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+    <div class="filters reveal" id="filters" role="group" aria-label="Filter photos"></div>
+
+    <div class="gallery" id="galleryGrid">
+      <button class="shot reveal" aria-label="Open photo 1"><img src="9.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 2"><img src="10.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 3"><img src="11.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 4"><img src="12.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 5"><img src="13.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 6"><img src="14.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 7"><img src="15.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
+      <button class="shot reveal" aria-label="Open photo 8"><img src="16.jpeg" alt="Inside Game Hub" loading="lazy"><span class="shot-zoom"><svg class="ico"><use href="#i-zoom"/></svg>View</span></button>
     </div>
 
     <div class="gallery-foot">
@@ -872,7 +1301,7 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
       <h2 class="h2">Find the lounge.</h2>
       <p class="lead">Court Rd, Krishna Nagar, Hoshiarpur, Punjab 146001.</p>
       <div class="hours">
-        <h3>Opening hours</h3>
+        <div class="hours-head"><h3>Opening hours</h3><span class="status" id="visitStatus"></span></div>
         <div class="hours-row"><span>Monday – Friday</span><span>11:00 AM – 10:00 PM</span></div>
         <div class="hours-row"><span>Saturday – Sunday</span><span>10:00 AM – 11:00 PM</span></div>
       </div>
@@ -941,36 +1370,103 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 <script>
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   /* =======================================================
-     TRAILER: paste your YouTube link between the quotes.
-     Any normal YouTube link works (watch?v=..., youtu.be/..., or embed).
+     SETTINGS — edit these
      ======================================================= */
+
+  /* GTA 6 trailer link */
   var TRAILER_LINK = 'https://youtu.be/VQRLujxTm3c';
   var FALLBACK_URL = 'https://www.youtube.com/results?search_query=GTA+6+official+trailer';
 
-  function youtubeId(link) {
-    var m = /(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/.exec(link || '');
-    return m ? m[1] : null;
+  /* Opening hours (24-hour clock, India time). open/close are hours. */
+  var HOURS = {
+    weekday: { open: 11, close: 22 },   /* Mon–Fri: 11 AM – 10 PM */
+    weekend: { open: 10, close: 23 }    /* Sat–Sun: 10 AM – 11 PM */
+  };
+
+  /* Session rates in rupees, per player per hour. Set to your real prices.
+     While a rate is 0, the calculator asks visitors to check on WhatsApp. */
+  var RATES = { PS5: 0, VR: 0 };
+
+  /* Gallery categories, one per photo in order (photos 9.jpeg to 16.jpeg). */
+  var GALLERY_CATEGORIES = ['Lounge', 'Lounge', 'Lounge', 'Lounge', 'Lounge', 'Lounge', 'Lounge', 'Lounge'];
+
+  /* Booking settings */
+  var WA_NUMBER = '917696200489';
+  var BOOKING_SLOTS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];  /* start hours offered */
+  var MAX_DAYS_AHEAD = 90;
+  var MAX_PLAYERS = 20;
+
+  /* =======================================================
+     HELPERS
+     ======================================================= */
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function fmt12(h) { return (h % 12 || 12) + (h < 12 ? ' AM' : ' PM'); }
+  function todayIST() {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
   }
-  var id = youtubeId(TRAILER_LINK);
+  function istNow() {
+    var parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata', weekday: 'short', hour: 'numeric', hour12: false
+    }).formatToParts(new Date());
+    var o = {};
+    parts.forEach(function (p) { o[p.type] = p.value; });
+    return { day: o.weekday, hour: parseInt(o.hour, 10) % 24 };
+  }
+  function daysBetween(a, b) {
+    return (Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000;
+  }
+  function fmtDate(str) {
+    return new Date(str + 'T12:00:00').toLocaleDateString('en-IN', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+  }
 
-  /* ---------- Nav ---------- */
-  var nav = document.getElementById('nav');
-  var toggle = document.getElementById('navToggle');
-  function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 24); }
-  window.addEventListener('scroll', onScroll, { passive: true });
+  /* =======================================================
+     LOADER + PROGRESS + BACK TO TOP
+     ======================================================= */
+  var loader = $('loader');
+  function hideLoader() { loader.classList.add('done'); }
+  if (document.readyState === 'complete') { setTimeout(hideLoader, 300); }
+  else { window.addEventListener('load', function () { setTimeout(hideLoader, 300); }); }
+  setTimeout(hideLoader, 1800);
+
+  var progress = $('progress');
+  var toTop = $('toTop');
+  var ticking = false;
+  function onScroll() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? window.scrollY / max : 0;
+    progress.style.transform = 'scaleX(' + p + ')';
+    toTop.classList.toggle('show', window.scrollY > window.innerHeight * 0.8);
+    $('nav').classList.toggle('scrolled', window.scrollY > 24);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
   onScroll();
+  toTop.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
 
-  toggle.addEventListener('click', function () {
+  /* =======================================================
+     NAV: mobile menu + active section
+     ======================================================= */
+  var nav = $('nav');
+  var navToggle = $('navToggle');
+  navToggle.addEventListener('click', function () {
     var open = nav.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    navToggle.setAttribute('aria-expanded', String(open));
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   });
   document.querySelectorAll('#navLinks a').forEach(function (a) {
     a.addEventListener('click', function () {
       nav.classList.remove('open');
-      toggle.setAttribute('aria-expanded', 'false');
+      navToggle.setAttribute('aria-expanded', 'false');
     });
   });
 
@@ -986,11 +1482,13 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
     });
   }, { rootMargin: '-45% 0px -50% 0px' });
   Object.keys(links).forEach(function (sid) {
-    var s = document.getElementById(sid);
+    var s = $(sid);
     if (s) spy.observe(s);
   });
 
-  /* ---------- Scroll reveal ---------- */
+  /* =======================================================
+     SCROLL REVEAL + ANIMATED COUNTERS
+     ======================================================= */
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
@@ -998,16 +1496,72 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 
-  /* ---------- GTA 6 background trailer ----------
-     Starts muted and looping as soon as the page opens (browsers block
-     sound until the visitor interacts). "Turn sound on" restarts it unmuted. */
-  var bg = document.getElementById('launchBg');
-  var soundBtn = document.getElementById('soundBtn');
-  var watchBtn = document.getElementById('watchBtn');
+  function countUp(el) {
+    var to = parseFloat(el.getAttribute('data-count'));
+    var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    if (reduce) { el.textContent = to.toFixed(decimals) + suffix; return; }
+    var start = null;
+    var duration = 1400;
+    function frame(ts) {
+      if (start === null) start = ts;
+      var t = Math.min((ts - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = (to * eased).toFixed(decimals) + suffix;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  var countIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { countUp(e.target); countIO.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('[data-count]').forEach(function (el) { countIO.observe(el); });
+
+  /* =======================================================
+     OPEN-NOW STATUS (India time)
+     ======================================================= */
+  function updateStatus() {
+    var n = istNow();
+    var weekend = (n.day === 'Sat' || n.day === 'Sun');
+    var h = weekend ? HOURS.weekend : HOURS.weekday;
+    var isOpen = n.hour >= h.open && n.hour < h.close;
+    var text, closed;
+    if (isOpen) {
+      text = 'Open now · closes ' + fmt12(h.close);
+      closed = false;
+    } else if (n.hour < h.open) {
+      text = 'Closed now · opens ' + fmt12(h.open) + ' today';
+      closed = true;
+    } else {
+      text = 'Closed now · opens tomorrow';
+      closed = true;
+    }
+    $('openText').textContent = text;
+    $('openDot').classList.toggle('closed', closed);
+    var vs = $('visitStatus');
+    vs.textContent = isOpen ? 'Open now' : 'Closed now';
+    vs.classList.toggle('closed', closed);
+  }
+  updateStatus();
+  setInterval(updateStatus, 60 * 1000);
+
+  /* =======================================================
+     GTA 6 BACKGROUND TRAILER
+     ======================================================= */
+  var id = (function (link) {
+    var m = /(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/.exec(link || '');
+    return m ? m[1] : null;
+  })(TRAILER_LINK);
+
+  var bg = $('launchBg');
+  var soundBtn = $('soundBtn');
+  var soundLabel = $('soundLabel');
+  var watchBtn = $('watchBtn');
   watchBtn.href = id ? ('https://www.youtube.com/watch?v=' + id) : FALLBACK_URL;
 
-  var soundLabel = document.getElementById('soundLabel');
-  var muted = true;      /* starts muted: browsers block sound until the visitor interacts */
+  var muted = true;
   var unlocked = false;
 
   function sendCommand(func) {
@@ -1016,7 +1570,6 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
       f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: func, args: [] }), '*');
     }
   }
-
   function setSound(on) {
     muted = !on;
     sendCommand(on ? 'unMute' : 'mute');
@@ -1024,8 +1577,10 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
     soundBtn.setAttribute('aria-pressed', String(on));
   }
 
-  function playBackground() {
-    if (!id || reduce) return;   /* reduced-motion visitors keep the still image */
+  if (id && !reduce) {
+    var poster = $('launchPoster');
+    if (poster) poster.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+
     var frame = document.createElement('iframe');
     frame.src = 'https://www.youtube-nocookie.com/embed/' + id +
       '?autoplay=1&mute=1&enablejsapi=1&loop=1&playlist=' + id +
@@ -1035,17 +1590,10 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
     frame.setAttribute('tabindex', '-1');
     frame.setAttribute('aria-hidden', 'true');
     bg.appendChild(frame);
-  }
 
-  if (id) {
-    var poster = document.getElementById('launchPoster');
-    if (poster) poster.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
-    playBackground();
     soundBtn.hidden = false;
-
     soundBtn.addEventListener('click', function () { setSound(muted); });
 
-    /* Turn sound on at the first real interaction with the page */
     var unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'wheel'];
     var unlock = function () {
       if (unlocked) return;
@@ -1053,69 +1601,27 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
       unlockEvents.forEach(function (ev) { window.removeEventListener(ev, unlock); });
       setSound(true);
     };
-    unlockEvents.forEach(function (ev) {
-      window.addEventListener(ev, unlock, { passive: true });
-    });
-  }
+    unlockEvents.forEach(function (ev) { window.addEventListener(ev, unlock, { passive: true }); });
 
-  /* ---------- Pause the background video when it isn't visible (saves CPU/GPU) ---------- */
-  if (id) {
-    var launchSection = document.getElementById('launch');
     var launchVisible = true;
     var pageVisible = !document.hidden;
-    function syncPlayback() {
-      sendCommand(launchVisible && pageVisible ? 'playVideo' : 'pauseVideo');
-    }
+    function syncPlayback() { sendCommand(launchVisible && pageVisible ? 'playVideo' : 'pauseVideo'); }
     new IntersectionObserver(function (entries) {
       launchVisible = entries[0].isIntersecting;
       syncPlayback();
-    }, { threshold: 0.05 }).observe(launchSection);
+    }, { threshold: 0.05 }).observe($('launch'));
     document.addEventListener('visibilitychange', function () {
       pageVisible = !document.hidden;
       syncPlayback();
     });
   }
 
-  /* ---------- Lightbox ---------- */
-  var photos = Array.prototype.map.call(document.querySelectorAll('.gallery .shot img'), function (img) {
-    return { src: img.getAttribute('src'), alt: img.getAttribute('alt') };
-  });
-  var dlg = document.getElementById('lightbox');
-  var lbImg = document.getElementById('lbImg');
-  var lbCount = document.getElementById('lbCount');
-  var current = 0;
-
-  function show(i) {
-    current = (i + photos.length) % photos.length;
-    lbImg.src = photos[current].src;
-    lbImg.alt = photos[current].alt;
-    lbCount.textContent = (current + 1) + ' / ' + photos.length;
-  }
-  document.querySelectorAll('.gallery .shot').forEach(function (btn, i) {
-    btn.addEventListener('click', function () { show(i); dlg.showModal(); });
-  });
-  document.getElementById('lbPrev').addEventListener('click', function () { show(current - 1); });
-  document.getElementById('lbNext').addEventListener('click', function () { show(current + 1); });
-  document.getElementById('lbClose').addEventListener('click', function () { dlg.close(); });
-  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
-  document.addEventListener('keydown', function (e) {
-    if (!dlg.open) return;
-    if (e.key === 'ArrowLeft') show(current - 1);
-    if (e.key === 'ArrowRight') show(current + 1);
-  });
-
-  /* ---------- GTA 6 countdown (midnight IST, Nov 19, 2026) ---------- */
+  /* =======================================================
+     GTA 6 COUNTDOWN (midnight IST, Nov 19, 2026)
+     ======================================================= */
   var target = new Date('2026-11-19T00:00:00+05:30').getTime();
-  var units = {
-    days: document.getElementById('cd-days'),
-    hours: document.getElementById('cd-hours'),
-    mins: document.getElementById('cd-mins'),
-    secs: document.getElementById('cd-secs')
-  };
-  var box = document.getElementById('countdown');
-  var done = document.getElementById('cd-done');
+  var units = { days: $('cd-days'), hours: $('cd-hours'), mins: $('cd-mins'), secs: $('cd-secs') };
   var timer;
-
   function setUnit(el, value) {
     if (el.textContent === value) return;
     el.textContent = value;
@@ -1124,12 +1630,11 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
     void el.offsetWidth;
     el.classList.add('tick');
   }
-  function pad(n) { return String(n).padStart(2, '0'); }
   function tickClock() {
     var diff = target - Date.now();
     if (diff <= 0) {
-      box.style.display = 'none';
-      done.classList.add('show');
+      $('countdown').style.display = 'none';
+      $('cd-done').classList.add('show');
       clearInterval(timer);
       return;
     }
@@ -1141,6 +1646,365 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
   }
   timer = setInterval(tickClock, 1000);
   tickClock();
+
+  /* =======================================================
+     PRICE CALCULATOR
+     ======================================================= */
+  var calcConsole = $('calcConsole');
+  var calcHours = $('calcHours');
+  var calcPlayers = $('calcPlayers');
+  var calcResult = $('calcResult');
+
+  function clampInput(el, min, max) {
+    var v = parseInt(el.value, 10);
+    if (isNaN(v) || v < min) v = min;
+    if (v > max) v = max;
+    el.value = v;
+    return v;
+  }
+  function updateCalc() {
+    var hours = clampInput(calcHours, 1, 8);
+    var players = clampInput(calcPlayers, 1, 10);
+    var rate = RATES[calcConsole.value] || 0;
+    var label = hours + (hours === 1 ? ' hour' : ' hours') + ' · ' + players + (players === 1 ? ' player' : ' players');
+    if (rate > 0) {
+      var total = rate * hours * players;
+      calcResult.innerHTML = '';
+      var strong = document.createElement('strong');
+      strong.textContent = '₹' + total.toLocaleString('en-IN');
+      calcResult.appendChild(strong);
+      calcResult.appendChild(document.createTextNode('Estimate for ' + label + '. Final price is confirmed on WhatsApp.'));
+    } else {
+      calcResult.textContent = 'Estimate for ' + label + '. Ask us on WhatsApp for today\'s rates.';
+    }
+  }
+  [calcConsole, calcHours, calcPlayers].forEach(function (el) {
+    el.addEventListener('input', updateCalc);
+    el.addEventListener('change', updateCalc);
+  });
+  updateCalc();
+
+  /* =======================================================
+     BOOKING WIZARD
+     Step 1: mode   Step 2: calendar dropdown + time   Step 3: players + details + review
+     ======================================================= */
+  var state = { step: 1, date: '', time: null, players: 1 };
+  var todayStr = todayIST();
+  var viewY = parseInt(todayStr.slice(0, 4), 10);
+  var viewM = parseInt(todayStr.slice(5, 7), 10) - 1;
+
+  var bkDate = $('bkDate');
+  var calTrigger = $('calTrigger');
+  var calPanel = $('calPanel');
+  var calValue = $('calValue');
+  var calMonth = $('calMonth');
+  var calGrid = $('calGrid');
+  var calPrev = $('calPrev');
+  var calNext = $('calNext');
+  var wizSteps = document.querySelectorAll('.wiz');
+  var prevBtn = $('prevBtn');
+  var nextBtn = $('nextBtn');
+  var stepLabel = $('stepLabel');
+  var stepBars = document.querySelectorAll('.step-bar');
+  var bookForm = $('bookForm');
+  var pCount = $('pCount');
+  var bkName = $('bkName');
+
+  var STEP_TITLES = ['Choose your mode', 'Pick a date and time', 'Your squad and details'];
+
+  /* ---- Calendar dropdown ---- */
+  function setCal(open) {
+    calPanel.hidden = !open;
+    calTrigger.setAttribute('aria-expanded', String(open));
+    if (open) {
+      var sel = calGrid.querySelector('[aria-pressed="true"]') || calGrid.querySelector('.cal-day:not(:disabled)');
+      if (sel) sel.focus();
+    }
+  }
+  function renderCal() {
+    var first = new Date(Date.UTC(viewY, viewM, 1));
+    var startDow = first.getUTCDay();
+    var days = new Date(Date.UTC(viewY, viewM + 1, 0)).getUTCDate();
+    calMonth.textContent = first.toLocaleDateString('en-IN', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+    calGrid.innerHTML = '';
+    for (var i = 0; i < startDow; i++) {
+      var empty = document.createElement('span');
+      empty.setAttribute('aria-hidden', 'true');
+      calGrid.appendChild(empty);
+    }
+    for (var d = 1; d <= days; d++) {
+      var ds = viewY + '-' + pad(viewM + 1) + '-' + pad(d);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cal-day';
+      b.textContent = d;
+      b.dataset.date = ds;
+      b.setAttribute('aria-label', fmtDate(ds));
+      var tooEarly = ds < todayStr;
+      var tooLate = daysBetween(todayStr, ds) > MAX_DAYS_AHEAD;
+      b.disabled = tooEarly || tooLate;
+      if (ds === todayStr) b.classList.add('today');
+      if (ds === state.date) b.setAttribute('aria-pressed', 'true');
+      calGrid.appendChild(b);
+    }
+
+    var currentIdx = parseInt(todayStr.slice(0, 4), 10) * 12 + parseInt(todayStr.slice(5, 7), 10) - 1;
+    calPrev.disabled = (viewY * 12 + viewM) <= currentIdx;
+    var lastIdx = currentIdx + Math.ceil(MAX_DAYS_AHEAD / 28);
+    calNext.disabled = (viewY * 12 + viewM) >= lastIdx;
+  }
+  function shiftMonth(delta) {
+    var t = new Date(Date.UTC(viewY, viewM + delta, 1));
+    viewY = t.getUTCFullYear();
+    viewM = t.getUTCMonth();
+    renderCal();
+  }
+  calTrigger.addEventListener('click', function () { setCal(calPanel.hidden); if (!calPanel.hidden) renderCal(); });
+  calPrev.addEventListener('click', function () { shiftMonth(-1); });
+  calNext.addEventListener('click', function () { shiftMonth(1); });
+  calGrid.addEventListener('click', function (e) {
+    var btn = e.target.closest('.cal-day');
+    if (!btn || btn.disabled) return;
+    state.date = btn.dataset.date;
+    bkDate.value = state.date;
+    calValue.textContent = fmtDate(state.date);
+    calValue.classList.remove('cal-value-empty');
+    $('errDate').textContent = '';
+    setCal(false);
+    calTrigger.focus();
+  });
+  document.addEventListener('click', function (e) {
+    if (!calPanel.hidden && !$('cal').contains(e.target)) setCal(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !calPanel.hidden) { setCal(false); calTrigger.focus(); }
+  });
+
+  /* ---- Time chips ---- */
+  var timeGrid = $('timeGrid');
+  BOOKING_SLOTS.forEach(function (hr) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'time-chip';
+    b.textContent = fmt12(hr);
+    b.dataset.hour = hr;
+    b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', function () {
+      state.time = hr;
+      timeGrid.querySelectorAll('.time-chip').forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x === b));
+      });
+      $('errTime').textContent = '';
+    });
+    timeGrid.appendChild(b);
+  });
+
+  /* ---- Player stepper ---- */
+  function setPlayers(n) {
+    state.players = Math.min(MAX_PLAYERS, Math.max(1, n));
+    pCount.textContent = state.players;
+    $('pMinus').disabled = state.players <= 1;
+    $('pPlus').disabled = state.players >= MAX_PLAYERS;
+  }
+  $('pMinus').addEventListener('click', function () { setPlayers(state.players - 1); });
+  $('pPlus').addEventListener('click', function () { setPlayers(state.players + 1); });
+  setPlayers(1);
+
+  /* ---- Review card (built with text nodes, not HTML strings) ---- */
+  function selectedMode() {
+    var checked = document.querySelector('input[name="mode"]:checked');
+    return checked ? checked.value : '';
+  }
+  function renderReview() {
+    var box = $('review');
+    box.innerHTML = '';
+    var title = document.createElement('div');
+    title.className = 'review-title';
+    title.textContent = 'Your booking';
+    box.appendChild(title);
+    var rows = [
+      ['Mode', selectedMode()],
+      ['Date', state.date ? fmtDate(state.date) : '—'],
+      ['Time', state.time !== null ? fmt12(state.time) : '—'],
+      ['Players', String(state.players)],
+      ['Name', bkName.value.trim() || '—']
+    ];
+    rows.forEach(function (r) {
+      var row = document.createElement('div');
+      row.className = 'review-row';
+      var a = document.createElement('span');
+      a.textContent = r[0];
+      var b = document.createElement('span');
+      b.textContent = r[1];
+      row.appendChild(a);
+      row.appendChild(b);
+      box.appendChild(row);
+    });
+  }
+
+  /* ---- Step navigation and validation ---- */
+  function goTo(n) {
+    state.step = n;
+    wizSteps.forEach(function (s) { s.hidden = parseInt(s.dataset.step, 10) !== n; });
+    stepBars.forEach(function (b) { b.classList.toggle('on', parseInt(b.dataset.s, 10) <= n); });
+    stepLabel.textContent = 'Step ' + n + ' of 3 · ' + STEP_TITLES[n - 1];
+    prevBtn.hidden = n === 1;
+    nextBtn.innerHTML = '';
+    var label = document.createTextNode(n === 3 ? 'Send on WhatsApp' : 'Next');
+    nextBtn.appendChild(label);
+    if (n === 3) renderReview();
+    var panelTop = $('bookPanel').getBoundingClientRect().top;
+    if (panelTop < 0) $('bookPanel').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+
+  function validate(step) {
+    if (step === 1) return !!selectedMode();
+    if (step === 2) {
+      var ok = true;
+      if (!state.date) {
+        $('errDate').textContent = 'Please pick a date.';
+        if (ok) calTrigger.focus();
+        ok = false;
+      }
+      if (state.time === null) {
+        $('errTime').textContent = 'Please pick a start time.';
+        ok = false;
+      }
+      return ok;
+    }
+    if (step === 3) {
+      if (!bkName.value.trim()) {
+        $('errName').textContent = 'Please enter your name.';
+        bkName.setAttribute('aria-invalid', 'true');
+        bkName.focus();
+        return false;
+      }
+      $('errName').textContent = '';
+      bkName.setAttribute('aria-invalid', 'false');
+      return true;
+    }
+    return true;
+  }
+
+  function sendToWhatsApp() {
+    var lines = [
+      '🎮 Hi Game Hub! I would like to book a session.',
+      '',
+      'Session: ' + selectedMode(),
+      'Date: ' + fmtDate(state.date),
+      'Time: ' + fmt12(state.time),
+      'Players: ' + state.players,
+      'Name: ' + bkName.value.trim()
+    ];
+    var phone = $('bkPhone').value.trim();
+    if (phone) lines.push('Phone: ' + phone);
+    var note = $('bkNote').value.trim();
+    if (note) lines.push('Note: ' + note);
+    var url = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(lines.join('\n'));
+    window.open(url, '_blank', 'noopener');
+  }
+
+  nextBtn.addEventListener('click', function () {
+    if (!validate(state.step)) return;
+    if (state.step < 3) goTo(state.step + 1);
+    else sendToWhatsApp();
+  });
+  prevBtn.addEventListener('click', function () {
+    if (state.step > 1) goTo(state.step - 1);
+  });
+  bookForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    nextBtn.click();
+  });
+
+  bkName.addEventListener('input', function () {
+    if (bkName.value.trim()) { $('errName').textContent = ''; bkName.setAttribute('aria-invalid', 'false'); }
+  });
+
+  goTo(1);
+
+  /* =======================================================
+     GALLERY: categories, filters, lightbox
+     ======================================================= */
+  var shots = Array.prototype.slice.call(document.querySelectorAll('#galleryGrid .shot'));
+  shots.forEach(function (s, i) {
+    s.dataset.cat = GALLERY_CATEGORIES[i] || 'Other';
+  });
+
+  var cats = ['All'].concat(GALLERY_CATEGORIES.filter(function (c, i, arr) { return arr.indexOf(c) === i; }));
+  var filters = $('filters');
+  var activeCat = 'All';
+  cats.forEach(function (cat) {
+    var b = document.createElement('button');
+    b.className = 'filter-btn';
+    b.type = 'button';
+    b.textContent = cat;
+    b.setAttribute('aria-pressed', String(cat === activeCat));
+    b.addEventListener('click', function () {
+      activeCat = cat;
+      filters.querySelectorAll('.filter-btn').forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x.textContent === cat));
+      });
+      applyFilter();
+    });
+    filters.appendChild(b);
+  });
+  if (cats.length <= 2) filters.hidden = true;
+
+  var visible = shots.slice();
+  function applyFilter() {
+    visible = shots.filter(function (s) {
+      var show = activeCat === 'All' || s.dataset.cat === activeCat;
+      s.hidden = !show;
+      return show;
+    });
+  }
+  applyFilter();
+
+  var dlg = $('lightbox');
+  var lbImg = $('lbImg');
+  var lbCount = $('lbCount');
+  var current = 0;
+  function showPhoto(i) {
+    if (!visible.length) return;
+    current = (i + visible.length) % visible.length;
+    var img = visible[current].querySelector('img');
+    lbImg.src = img.getAttribute('src');
+    lbImg.alt = img.getAttribute('alt');
+    lbCount.textContent = (current + 1) + ' / ' + visible.length;
+  }
+  shots.forEach(function (s) {
+    s.addEventListener('click', function () {
+      current = visible.indexOf(s);
+      showPhoto(current);
+      dlg.showModal();
+    });
+  });
+  $('lbPrev').addEventListener('click', function () { showPhoto(current - 1); });
+  $('lbNext').addEventListener('click', function () { showPhoto(current + 1); });
+  $('lbClose').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  document.addEventListener('keydown', function (e) {
+    if (!dlg.open) return;
+    if (e.key === 'ArrowLeft') showPhoto(current - 1);
+    if (e.key === 'ArrowRight') showPhoto(current + 1);
+  });
+
+  /* =======================================================
+     MAGNETIC BUTTONS (desktop with a mouse only)
+     ======================================================= */
+  if (finePointer && !reduce) {
+    document.querySelectorAll('[data-magnetic]').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var dx = (e.clientX - (r.left + r.width / 2)) / r.width;
+        var dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+        el.style.translate = (dx * 8).toFixed(1) + 'px ' + (dy * 6).toFixed(1) + 'px';
+      });
+      el.addEventListener('pointerleave', function () { el.style.translate = ''; });
+    });
+  }
 })();
 </script>
 
