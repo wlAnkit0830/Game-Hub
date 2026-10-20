@@ -929,11 +929,8 @@ footer { border-top: 1px solid var(--line); padding: 40px 0 calc(40px + env(safe
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* =======================================================
-     TRAILER: paste your YouTube link between the quotes.
-     Any normal YouTube link works (watch?v=..., youtu.be/..., or embed).
-     ======================================================= */
-  var TRAILER_LINK = 'PASTE_YOUTUBE_LINK_HERE';
+ 
+  var TRAILER_LINK = 'https://youtu.be/VQRLujxTm3c?si=hV_o9qIyry7aFEm4';
   var FALLBACK_URL = 'https://www.youtube.com/results?search_query=GTA+6+official+trailer';
 
   function youtubeId(link) {
